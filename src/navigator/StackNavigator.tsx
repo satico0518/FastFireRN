@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {HomeScreen} from '../HomeScreen';
-import {LoginScreen} from '../LoginScreen';
+import {HomeScreen} from '../screens/HomeScreen';
+import {LoginScreen} from '../screens/LoginScreen';
 
 type StackNavigatorParams = {
     Login: undefined,
@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const StackNavigator = () => (
   <Stack.Navigator
-    initialRouteName="Login"
+    initialRouteName="Home"
     screenOptions={{
       contentStyle: {backgroundColor: 'black'},
     }}>
