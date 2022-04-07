@@ -6,6 +6,7 @@ import {DrawerNavigator} from './src/navigator/DrawerNavigator';
 import {LogBox} from 'react-native';
 import {PermissionProvider} from './src/context/PermissionContext';
 import {EmployeeAssistanceProvider} from './src/context/EmployeeAssistanceContext';
+import {AuthProvider} from './src/context/AuthContext';
 
 LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
@@ -13,9 +14,9 @@ LogBox.ignoreLogs([
 
 const AppState = ({children}: any) => (
   <PermissionProvider>
-    <EmployeeAssistanceProvider>
-      {children}
-    </EmployeeAssistanceProvider>
+    <AuthProvider>
+      <EmployeeAssistanceProvider>{children}</EmployeeAssistanceProvider>
+    </AuthProvider>
   </PermissionProvider>
 );
 
