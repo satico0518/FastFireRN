@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
 import {
   createDrawerNavigator,
@@ -11,20 +11,31 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StackNavigator} from './StackNavigator';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {AuthContext} from '../context/AuthContext';
 
 const Drawer = createDrawerNavigator();
 
-export const DrawerNavigator = () => (
-  <Drawer.Navigator drawerContent={props => <CustomMenu {...props} />}>
-    <Drawer.Screen
-      name="Stack"
-      component={StackNavigator}
-      options={{title:'FastFire App', headerTitleAlign: 'center'}}
-    />
-    <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-    <Drawer.Screen name="Settings" component={SettingsScreen} options={{headerTitle: 'Ajustes'}}/>
-  </Drawer.Navigator>
-);
+export const DrawerNavigator = () => {
+  const {authState} = useContext(AuthContext);
+
+  return (
+    <Drawer.Navigator
+      drawerContent={props => <CustomMenu {...props} />}
+      screenOptions={{headerShown: authState.isLoggedIn}}>
+      <Drawer.Screen
+        name="Stack"
+        component={StackNavigator}
+        options={{title: 'FastFire App', headerTitleAlign: 'center'}}
+      />
+      <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+      <Drawer.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{headerTitle: 'Ajustes'}}
+      />
+    </Drawer.Navigator>
+  );
+};
 
 const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
   return (
