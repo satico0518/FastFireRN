@@ -8,16 +8,21 @@ import {
 import {NotificationsScreen} from '../screens/NotificationsScreen';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import {Image, StyleSheet, Text, View} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { StackNavigator } from './StackNavigator';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {StackNavigator} from './StackNavigator';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Drawer = createDrawerNavigator();
 
 export const DrawerNavigator = () => (
   <Drawer.Navigator drawerContent={props => <CustomMenu {...props} />}>
-    <Drawer.Screen name="Stack" component={StackNavigator} options={{title:'Home'}}/>
+    <Drawer.Screen
+      name="Stack"
+      component={StackNavigator}
+      options={{title:'FastFire App', headerTitleAlign: 'center'}}
+    />
     <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-    <Drawer.Screen name="Settings" component={SettingsScreen} />
+    <Drawer.Screen name="Settings" component={SettingsScreen} options={{headerTitle: 'Ajustes'}}/>
   </Drawer.Navigator>
 );
 
@@ -35,10 +40,12 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
       </View>
       <View style={styles.menuContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.menuText}>Inicio</Text>
+          <Text style={styles.menuText}>
+            <Icon name="star-outline" color="red" size={40} /> Inicio
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-          <Text style={styles.menuText}>Notificaciones</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Assistance')}>
+          <Text style={styles.menuText}>Asistencia</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
           <Text style={styles.menuText}>Ajustes</Text>
@@ -48,9 +55,8 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   avatarContainer: {alignItems: 'center'},
   menuContainer: {marginHorizontal: 10, paddingVertical: 10},
-  menuText: {fontSize: 20}
+  menuText: {fontSize: 20},
 });
