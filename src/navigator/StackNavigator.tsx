@@ -27,7 +27,7 @@ export const StackNavigator = () => {
   <Stack.Navigator
     initialRouteName="Assistance"
     screenOptions={{
-      contentStyle: {backgroundColor: 'black'},
+      contentStyle: {backgroundColor: 'white'},
     }}>
     <Stack.Screen
       name="Login"
@@ -47,7 +47,7 @@ export const StackNavigator = () => {
       name="Assistance"
       component={AssitanceScreen}
       options={{
-        headerStyle: {backgroundColor: 'black'},
+        headerStyle: {backgroundColor: 'white'},
         headerTitleStyle: {color: 'white'},
         headerTitleAlign: 'center',
         title: 'Control de Asistencia',
