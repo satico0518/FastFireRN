@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Alert, Dimensions, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {
   EmployeeAssistanceContext,
@@ -11,7 +11,7 @@ import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from './LoadingScreen';
 import {Fab} from '../components/Fab';
 import {Header} from '../components/Header';
-import { Hr } from '../components/Hr';
+import {Hr} from '../components/Hr';
 
 export const AssitanceScreen = () => {
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
@@ -27,21 +27,45 @@ export const AssitanceScreen = () => {
   }, [employeeAssistanceState]);
 
   const handleIn = () => {
-    const newState: EmployeeAssistanceState = {
-      isIn: true,
-      inTime: new Date().toLocaleString(),
-      location: 'work',
-    };
-    setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+    Alert.alert('Aviso', 'Registrar inicio de labores?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'SI',
+        onPress: () => {
+          const newState: EmployeeAssistanceState = {
+            isIn: true,
+            inTime: new Date().toLocaleString(),
+            location: 'work',
+          };
+          setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+        },
+      },
+    ]);
   };
 
   const handleOut = () => {
-    const newState: EmployeeAssistanceState = {
-      isIn: false,
-      outTime: new Date().toLocaleString(),
-      location: 'work',
-    };
-    setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+    Alert.alert('Aviso!', 'Ya sales de tu trabajo?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'SI',
+        onPress: () => {
+          const newState: EmployeeAssistanceState = {
+            isIn: false,
+            outTime: new Date().toLocaleString(),
+            location: 'work',
+          };
+          setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+        },
+      },
+    ]);
   };
 
   return (
