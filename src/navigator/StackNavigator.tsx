@@ -8,9 +8,11 @@ import { AssitanceScreen } from '../screens/AssitanceScreen';
 import { PermissionContext } from '../context/PermissionContext';
 import { LoadingScreen } from '../screens/LoadingScreen';
 import { AuthContext } from '../context/AuthContext';
+import { RegisterScreen } from '../screens/RegisterScreen';
 
 type StackNavigatorParams = {
     Login: undefined,
+    Register: undefined,
     Home: undefined,
     Assistance: undefined,
 }
@@ -34,6 +36,11 @@ export const StackNavigator = () => {
     <Stack.Screen
       name="Login"
       component={LoginScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="Register"
+      component={RegisterScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen
