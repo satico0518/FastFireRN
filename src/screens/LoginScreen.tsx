@@ -1,7 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, { useContext } from 'react';
+import React, {useContext, useState} from 'react';
 import {
-  Button,
   Dimensions,
   Image,
   ImageBackground,
@@ -9,56 +8,79 @@ import {
   Text,
   TextInput,
   View,
+  TouchableOpacity,
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { AuthContext } from '../context/AuthContext';
+import {AuthContext} from '../context/AuthContext';
 
 interface Props extends NativeStackScreenProps<any, any> {}
+interface Login {
+  id: string;
+  password: string;
+}
 
 export const LoginScreen = ({navigation}: Props) => {
+  const [form, setForm] = useState<Login>({id: '', password: ''});
   const {authState, setAuthState} = useContext(AuthContext);
 
   const handleLogin = () => {
     setAuthState({
       ...authState,
-      isLoggedIn: true
-    })
-    navigation.replace('Assistance')
-  }
+      isLoggedIn: true,
+    });
+    navigation.replace('Assistance');
+  };
+
+  const handleInputChange = (value: string, field: 'id' | 'password') => {
+    setForm({
+      ...form,
+      [field]: value,
+    });
+  };
 
   return (
     <ImageBackground
       style={{flex: 1}}
       source={require('../assets/background.png')}>
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <View style={styles.container}>
-        <Text style={styles.text}>Bienvenido!</Text>
-        <Text style={styles.text2}>Ingresa para continuar</Text>
-        <View style={styles.inputWrapper}>
-          <Icon name="person-circle-outline" color="white" size={20} />
-          <TextInput
-            style={styles.input}
-            onChangeText={() => {}}
-            value="79958852"
-            placeholder="identificacion"
-          />
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+        <View>
+          <Text style={styles.text}>Bienvenido!</Text>
+          <Text style={styles.text2}>Ingresa para continuar</Text>
+          <View style={styles.inputWrapper}>
+            <Icon name="person-circle-outline" color="white" size={20} />
+            <TextInput
+              style={styles.input}
+              onChangeText={val => handleInputChange(val, 'id')}
+              value={form.id}
+              placeholder="identificacion"
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Icon name="lock-closed-outline" color="white" size={20} />
+            <TextInput
+              inlineImageLeft=""
+              style={styles.input}
+              onChangeText={val => handleInputChange(val, 'password')}
+              value={form.password}
+              placeholder="contraseña"
+              autoCapitalize="none"
+              secureTextEntry
+            />
+          </View>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Ingresar</Text>
+          </TouchableOpacity>
+          <View style={styles.linksWrapper}>
+            <TouchableOpacity>
+              <Text style={styles.smallLink}>recordar contraseña</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.smallLink}>registrarme</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.inputWrapper}>
-          <Icon name="lock-closed-outline" color="white" size={20} />
-          <TextInput
-            inlineImageLeft=""
-            style={styles.input}
-            onChangeText={() => {}}
-            value="**********"
-            placeholder="contraseña"
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Ingresar</Text>
-        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -67,17 +89,12 @@ export const LoginScreen = ({navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
     alignItems: 'center',
-    position: 'relative',
-    bottom: 100,
+    justifyContent: 'space-around',
   },
   logo: {
     width: Dimensions.get('screen').width * 0.8,
     height: 90,
-    position: 'relative',
-    top: 150,
-    alignSelf: 'center'
   },
   text: {
     fontSize: 28,
@@ -118,5 +135,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     textTransform: 'uppercase',
+  },
+  linksWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 10,
+    marginTop: 10,
+  },
+  smallLink: {
+    color: '#fff',
   },
 });
