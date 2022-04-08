@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, Dimensions, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {
   EmployeeAssistanceContext,
@@ -9,6 +9,9 @@ import {PermissionContext} from '../context/PermissionContext';
 import MapView from 'react-native-maps';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from './LoadingScreen';
+import {Fab} from '../components/Fab';
+import {Header} from '../components/Header';
+import {Hr} from '../components/Hr';
 
 export const AssitanceScreen = () => {
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
@@ -24,52 +27,86 @@ export const AssitanceScreen = () => {
   }, [employeeAssistanceState]);
 
   const handleIn = () => {
-    const newState: EmployeeAssistanceState = {
-      isIn: true,
-      inTime: new Date().toLocaleString(),
-      location: 'work',
-    };
-    setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+    Alert.alert('Aviso', 'Registrar inicio de labores?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'SI',
+        onPress: () => {
+          const newState: EmployeeAssistanceState = {
+            isIn: true,
+            inTime: new Date().toLocaleString(),
+            location: 'work',
+          };
+          setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+        },
+      },
+    ]);
   };
 
   const handleOut = () => {
-    const newState: EmployeeAssistanceState = {
-      isIn: false,
-      outTime: new Date().toLocaleString(),
-      location: 'work',
-    };
-    setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+    Alert.alert('Aviso!', 'Ya sales de tu trabajo?', [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'SI',
+        onPress: () => {
+          const newState: EmployeeAssistanceState = {
+            isIn: false,
+            outTime: new Date().toLocaleString(),
+            location: 'work',
+          };
+          setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
+        },
+      },
+    ]);
   };
 
   return (
     <View style={styles.container}>
       {permissions.locationStatus === 'granted' ? (
         <View style={{flex: 1, width: '100%', backgroundColor: 'white'}}>
+          <Header />
           {hasLocation ? (
-            <MapView
-              style={{flex: 1}}
-              initialRegion={{
-                latitude: initialPosition.lat,
-                longitude: initialPosition.long,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-              showsUserLocation
-              followsUserLocation
-            />
+            <>
+              <MapView
+                style={{height: Dimensions.get('screen').height * 0.25}}
+                initialRegion={{
+                  latitude: initialPosition.lat,
+                  longitude: initialPosition.long,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                showsUserLocation
+                followsUserLocation
+              />
+              {isIn ? (
+                <Fab
+                  iconName="log-out-outline"
+                  backColor="orange"
+                  text="Registrar Salida"
+                  onPress={handleOut}
+                  style={styles.actionButton}
+                />
+              ) : (
+                <Fab
+                  iconName="hammer-outline"
+                  backColor="#00c060"
+                  text="Registrar Ingreso"
+                  onPress={handleIn}
+                  style={styles.actionButton}
+                />
+              )}
+              <Hr />
+            </>
           ) : (
             <LoadingScreen />
-          )}
-          {isIn ? (
-            <TouchableOpacity
-              style={styles.actionButtonOut}
-              onPress={handleOut}>
-              <Text style={styles.actionButtonText}>Registrar Salida</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.actionButtonIn} onPress={handleIn}>
-              <Text style={styles.actionButtonText}>Registrar Ingreso</Text>
-            </TouchableOpacity>
           )}
         </View>
       ) : (
@@ -114,14 +151,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  actionButtonIn: {
-    backgroundColor: 'green',
-  },
-  actionButtonOut: {
-    backgroundColor: 'orange',
-  },
-  actionButtonText: {
-    color: 'white',
-    width: '100%',
+  actionButton: {
+    width: Dimensions.get('screen').width * 0.9,
+    height: 50,
+    marginVertical: 20,
+    alignSelf: 'center',
   },
 });
