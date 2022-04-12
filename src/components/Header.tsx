@@ -1,5 +1,6 @@
 import React from 'react';
 import {Image, View, Text, StyleSheet} from 'react-native';
+import useDateInSpanish from '../hooks/useDateInSpanish';
 
 export const Header = () => {
   return (
@@ -8,17 +9,16 @@ export const Header = () => {
         <Image
           style={styles.img}
           source={{
-            uri: 'https://img2.freepng.es/20180623/iqh/kisspng-computer-icons-avatar-social-media-blog-font-aweso-avatar-icon-5b2e99c40ce333.6524068515297806760528.jpg',
+            uri: 'https://noverbal.es/uploads/blog/rostro-de-un-criminal.jpg',
             width: 70,
             height: 70,
           }}
         />
       </View>
       <View style={styles.texts}>
-        <Text style={styles.name}>Hola Pedro!</Text>
+        <Text style={styles.name}>Hola Davo!</Text>
         <View style={styles.date}>
-          <Text style={styles.dateHour}>9:50</Text>
-          <Text style={styles.dateDay}>/ 26 Jun </Text>
+          <Text style={styles.dateDay}>{useDateInSpanish()} </Text>
         </View>
       </View>
     </View>
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     padding: 5,
-    borderColor: 'gray',
+    borderColor: '#ff1c1c',
     borderWidth: 5,
     borderRadius: 100,
   },
@@ -50,12 +50,8 @@ const styles = StyleSheet.create({
   date: {
       flexDirection: 'row'
   },
-  dateHour: {
-      fontSize: 18,
-  },
   dateDay: {
       fontSize: 18,
       color: 'green',
-      marginLeft: 10
   }
 });
