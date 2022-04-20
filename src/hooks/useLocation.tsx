@@ -1,14 +1,20 @@
 import {useEffect, useState} from 'react';
 import Geolocation from '@react-native-community/geolocation';
 
+export interface Location {
+  lat: number;
+  long: number;
+}
+
 export const useLocation = () => {
   const [hasLocation, setHasLocation] = useState(false);
-  const [initialPosition, setInitialPosition] = useState({lat: 0, long: 0});
+  const [currentPosition, setCurrentPosition] = useState({lat: 0, long: 0});
+  useEffect(() => getCurrentLocation(), []);
 
-  useEffect(() => {
+  const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       ({coords}) => {
-        setInitialPosition({lat: coords.latitude, long: coords.longitude});
+        setCurrentPosition({lat: coords.latitude, long: coords.longitude});
         setHasLocation(true);
       },
       err => {
@@ -19,10 +25,11 @@ export const useLocation = () => {
         enableHighAccuracy: true,
       },
     );
-  }, []);
+  };
 
   return {
     hasLocation,
-    initialPosition,
+    currentPosition,
+    getCurrentLocation,
   };
 };

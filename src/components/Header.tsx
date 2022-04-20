@@ -1,24 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {Image, View, Text, StyleSheet} from 'react-native';
+import { AuthContext } from '../context/AuthContext';
+import useDateInSpanish from '../hooks/useDateInSpanish';
 
 export const Header = () => {
+  const {user} = useContext(AuthContext)
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
         <Image
           style={styles.img}
-          source={{
-            uri: 'https://img2.freepng.es/20180623/iqh/kisspng-computer-icons-avatar-social-media-blog-font-aweso-avatar-icon-5b2e99c40ce333.6524068515297806760528.jpg',
-            width: 70,
-            height: 70,
-          }}
+          source={require('../assets/avatar.png')}
         />
       </View>
       <View style={styles.texts}>
-        <Text style={styles.name}>Hola Pedro!</Text>
+        <Text style={styles.name}>Hola, {user?.name}!</Text>
         <View style={styles.date}>
-          <Text style={styles.dateHour}>9:50</Text>
-          <Text style={styles.dateDay}>/ 26 Jun </Text>
+          <Text style={styles.dateDay}>{useDateInSpanish()} </Text>
         </View>
       </View>
     </View>
@@ -28,34 +26,32 @@ export const Header = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 20,
+    padding: 10,
     alignItems: 'center',
   },
   imgContainer: {
     padding: 5,
-    borderColor: 'gray',
+    borderColor: '#ff1c1c',
     borderWidth: 5,
     borderRadius: 100,
   },
   img: {
     borderRadius: 100,
+    width: 50,
+    height: 50,
   },
   texts: {
     marginLeft: 20,
   },
   name: {
-    fontSize: 25,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   date: {
       flexDirection: 'row'
   },
-  dateHour: {
-      fontSize: 18,
-  },
   dateDay: {
-      fontSize: 18,
+      fontSize: 15,
       color: 'green',
-      marginLeft: 10
   }
 });
