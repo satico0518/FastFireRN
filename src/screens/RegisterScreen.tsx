@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
-import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {Alert, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {AuthScreenLayout} from '../layouts/AuthScreenLayout';
 import {authStyles} from '../styles/authStyles';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthContext} from '../context/AuthContext';
+import {getUniqueId} from 'react-native-device-info';
+import {RegisterData} from '../interfaces/app-interfaces';
 
 interface Props extends NativeStackScreenProps<any, any> {}
 interface Register {
@@ -14,11 +17,12 @@ interface Register {
 }
 
 export const RegisterScreen = ({navigation}: Props) => {
+  const {singUp} = useContext(AuthContext);
   const [form, setForm] = useState<Register>({
-    id: '',
-    name: '',
-    password: '',
-    passwordConfirm: '',
+    id: '123',
+    name: 'abc',
+    password: '123456',
+    passwordConfirm: '123456',
   });
 
   const handleInputChange = (
@@ -32,8 +36,39 @@ export const RegisterScreen = ({navigation}: Props) => {
   };
 
   const handleRegister = () => {
-    // TODO register user
-    navigation.replace('Assistance');
+    if (form.id.length < 3 || form.name.length < 3 || form.password.length < 6) {
+      Alert.alert('Aviso', 'Identificación (min 3 letras), Nombre (minimo 3 letras) y Contraseña (min 6 letras) son obligatorios', [{
+        text: 'Ok'
+      }], {
+        onDismiss: () => {
+          return;
+        },
+      });
+      return;
+    }
+    if (form.password !== form.passwordConfirm) {
+      Alert.alert(
+        'Alerta',
+        'Las contrasenas no coinciden, revise por favor!',
+        [{text: 'OK'}],
+        {
+          cancelable: true,
+          onDismiss: () => {
+            return;
+          },
+        },
+      );
+      return;
+    }
+    const deviceId = getUniqueId();
+    const registerData: RegisterData = {
+      identification: form.id,
+      name: form.name,
+      password: form.passwordConfirm,
+      deviceId,
+    };
+    singUp(registerData);
+    navigation.replace('Login');
   };
   return (
     <AuthScreenLayout>
@@ -47,7 +82,7 @@ export const RegisterScreen = ({navigation}: Props) => {
             onChangeText={val => handleInputChange(val, 'id')}
             value={form.id}
             placeholder="identificación"
-            placeholderTextColor="#727272"
+            placeholderTextColor="#ccc"
             keyboardType="numeric"
           />
         </View>
@@ -58,7 +93,9 @@ export const RegisterScreen = ({navigation}: Props) => {
             onChangeText={val => handleInputChange(val, 'name')}
             value={form.name}
             placeholder="nombre"
-            placeholderTextColor="#727272"
+            placeholderTextColor="#ccc"
+            autoCapitalize="words"
+            autoCorrect={false}
           />
         </View>
         <View style={authStyles.inputWrapper}>
@@ -69,7 +106,7 @@ export const RegisterScreen = ({navigation}: Props) => {
             onChangeText={val => handleInputChange(val, 'password')}
             value={form.password}
             placeholder="contraseña"
-            placeholderTextColor="#727272"
+            placeholderTextColor="#ccc"
             autoCapitalize="none"
             secureTextEntry
           />
@@ -82,7 +119,7 @@ export const RegisterScreen = ({navigation}: Props) => {
             onChangeText={val => handleInputChange(val, 'passwordConfirm')}
             value={form.passwordConfirm}
             placeholder="confirmar contraseña"
-            placeholderTextColor="#727272"
+            placeholderTextColor="#ccc"
             autoCapitalize="none"
             secureTextEntry
           />

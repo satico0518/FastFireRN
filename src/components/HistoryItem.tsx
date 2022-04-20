@@ -19,9 +19,9 @@ const getHourFromTime = (time: number): string => {
 export const HistoryItem = (history:History) => {
   return (
     <View style={styles.itemWrapper}>
-      <Text style={styles.text}>{getHourFromTime(history.initTime)}</Text>
-      <Icon name='arrow-forward-outline' size={25}/>
-      <Text style={styles.text}>{history.endTime ? getHourFromTime(history.endTime as number) : '...'}</Text>
+      <Text style={styles.textIn}>{getHourFromTime(history.initTime)}</Text>
+      <Icon name='arrow-forward-outline' size={20} style={{marginHorizontal: 7}}/>
+      <Text style={styles.textOut}>{history.endTime ? getHourFromTime(history.endTime as number) : '...'}</Text>
     </View>
   );
 };
@@ -36,7 +36,12 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 10
     },
-    text: {
-        fontSize: 20
+    textIn: {
+        fontSize: 15,
+        color: "#00c060",
+    },
+    textOut: {
+        fontSize: 15,
+        color: "#fd5e13",
     }
 })

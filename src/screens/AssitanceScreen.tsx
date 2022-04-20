@@ -21,7 +21,7 @@ import {Header} from '../components/Header';
 import {Hr} from '../components/Hr';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {convertMsToHM} from '../utils';
-import {HistoryItem} from '../components/HistoryItem';
+import {History, HistoryItem} from '../components/HistoryItem';
 
 export const AssitanceScreen = () => {
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
@@ -33,10 +33,6 @@ export const AssitanceScreen = () => {
   const {hasLocation, currentPosition, getCurrentLocation} = useLocation();
   const [history, setHistory] = useState<History[]>([]);
   const [totalHours, setTotalHours] = useState<number>(0);
-
-  useEffect(() => {
-    console.log(employeeAssistanceState);
-  }, [employeeAssistanceState]);
 
   useEffect(() => {
     if (history.length > 0) {
@@ -112,97 +108,113 @@ export const AssitanceScreen = () => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        {permissions.locationStatus === 'granted' ? (
-          <View style={{flex: 1, width: '100%', backgroundColor: 'white'}}>
-            <Header />
-            {hasLocation ? (
-              <>
-                <MapView
-                  userInterfaceStyle="dark"
-                  zoomControlEnabled
-                  style={{height: Dimensions.get('screen').height * 0.25}}
-                  initialRegion={{
+    <View style={styles.container}>
+      {permissions.locationStatus === 'granted' ? (
+        <View style={{flex: 1, width: '100%', backgroundColor: 'white'}}>
+          <Header />
+          {hasLocation ? (
+            <>
+              <MapView
+                showsUserLocation
+                followsUserLocation
+                userInterfaceStyle="dark"
+                style={{height: Dimensions.get('screen').height * 0.2}}
+                initialRegion={{
+                  latitude: currentPosition.lat,
+                  longitude: currentPosition.long,
+                  latitudeDelta: 0.009,
+                  longitudeDelta: 0.009,
+                }}>
+                <Marker
+                  coordinate={{
                     latitude: currentPosition.lat,
                     longitude: currentPosition.long,
-                    latitudeDelta: 0.009,
-                    longitudeDelta: 0.009,
+                    latitudeDelta: 0.3,
+                    longitudeDelta: 0.3,
                   }}
-                  showsUserLocation
-                  followsUserLocation>
-                  <Marker
-                    coordinate={{
-                      latitude: currentPosition.lat,
-                      longitude: currentPosition.long,
-                      latitudeDelta: 0.3,
-                      longitudeDelta: 0.3,
-                    }}
-                    title="Usted está aquí"
-                    description="En este punto se guardará su registro"
-                  />
-                </MapView>
-                {isIn ? (
-                  <Fab
-                    iconName="log-out-outline"
-                    backColor="orange"
-                    text="Registrar Salida"
-                    onPress={handleOut}
-                    style={styles.actionButton}
-                  />
-                ) : (
-                  <Fab
-                    iconName="hammer-outline"
-                    backColor="#00c060"
-                    text="Registrar Ingreso"
-                    onPress={handleIn}
-                    style={styles.actionButton}
-                  />
-                )}
-                <Hr />
-                <Text style={styles.registryTitle}>Registro de turnos</Text>
+                  title="Usted está aquí"
+                  description="En este punto se guardará su registro"
+                  image={require('../assets/pin.png')}
+                />
+              </MapView>
+              {isIn ? (
+                <Fab
+                  iconName="log-out-outline"
+                  backColor="#fd5e13"
+                  text="Registrar Salida"
+                  onPress={handleOut}
+                  style={styles.actionButton}
+                />
+              ) : (
+                <Fab
+                  iconName="hammer-outline"
+                  backColor="#00c060"
+                  text="Registrar Ingreso"
+                  onPress={handleIn}
+                  style={styles.actionButton}
+                />
+              )}
+              <Hr />
+              <Text style={styles.registryTitle}>Registro de turnos</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 20,
+                  width: Dimensions.get('screen').width * 0.7,
+                  alignSelf: 'center',
+                }}>
+                <TouchableOpacity
+                  style={styles.arrows}>
+                  <Icon name="arrow-back-sharp" size={20} />
+                </TouchableOpacity>
+                <Text style={{fontWeight: 'bold'}}>Hoy</Text>
+                <TouchableOpacity
+                  style={styles.arrows}>
+                  <Icon name="arrow-forward-sharp" size={20} />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.registryContent}>
                 <View
                   style={{
-                    flexDirection: 'row',
                     justifyContent: 'space-between',
-                    marginTop: 20,
-                    width: Dimensions.get('screen').width * 0.7,
-                    alignSelf: 'center',
+                    flexDirection: 'row',
+                    alignItems: 'center',
                   }}>
-                  <Icon name="arrow-back-outline" />
-                  <Text>Hoy</Text>
-                  <Icon name="arrow-forward-outline" />
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Tiempo acumulado
+                  </Text>
+                  <Text style={{fontWeight: 'bold', fontSize: 18}}>
+                    {convertMsToHM(totalHours)} hrs
+                  </Text>
                 </View>
-                <View style={styles.registryContent}>
-                  <View style={{justifyContent: 'space-between', flexDirection: 'row', alignItems:'center'}}>
-                    <Text style={{fontWeight: 'bold', fontSize: 15}}>
-                      Tiempo acumulado
-                    </Text>
-                    <Text style={{fontWeight: 'bold', fontSize: 18}}>{convertMsToHM(totalHours)} hrs</Text>
-                  </View>
-                  {history.map(h => (
-                    <HistoryItem key={h.initTime} {...h} />
-                  ))}
+                <View style={{height: Dimensions.get('screen').height * 0.2}}>
+                  <ScrollView>
+                    {history.map(h => (
+                      <HistoryItem key={h.initTime} {...h} />
+                    ))}
+                  </ScrollView>
                 </View>
-              </>
-            ) : (
-              <LoadingScreen />
-            )}
-          </View>
-        ) : (
-          <View style={styles.container}>
-            <Text style={styles.text}>
-              Por favor permita el acceso a su ubicación!
-            </Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={askLocationPermissions}>
-              <Text style={styles.buttonText}>Permitir</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </ScrollView>
+              </View>
+            </>
+          ) : (
+            <LoadingScreen />
+          )}
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <Text style={styles.text}>
+            Por favor permita el acceso a su ubicación!
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={askLocationPermissions}>
+            <Text style={styles.buttonText}>Permitir</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
   );
 };
 
@@ -234,13 +246,19 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     width: Dimensions.get('screen').width * 0.9,
-    height: 50,
-    marginVertical: 20,
+    height: 30,
+    marginVertical: 10,
     alignSelf: 'center',
+  },
+  arrows: {
+    borderColor: '#555555',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 3,
   },
   registryTitle: {
     top: 10,
-    fontSize: 18,
+    fontSize: 15,
     alignSelf: 'center',
   },
   registryContent: {

@@ -10,14 +10,10 @@ import {
 export const AuthScreenLayout:FC = ({children}) => {
 
   return (
-    <ImageBackground
-      style={{flex: 1}}
-      source={require('../assets/background.png')}>
       <View style={styles.container}>
         <Image source={require('../assets/logo.png')} style={styles.logo} />
         {children}
       </View>
-    </ImageBackground>
   );
 };
 

@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {Image, View, Text, StyleSheet} from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 import useDateInSpanish from '../hooks/useDateInSpanish';
 
 export const Header = () => {
+  const {user} = useContext(AuthContext)
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
         <Image
           style={styles.img}
-          source={{
-            uri: 'https://noverbal.es/uploads/blog/rostro-de-un-criminal.jpg',
-            width: 70,
-            height: 70,
-          }}
+          source={require('../assets/avatar.png')}
         />
       </View>
       <View style={styles.texts}>
-        <Text style={styles.name}>Hola Davo!</Text>
+        <Text style={styles.name}>Hola, {user?.name}!</Text>
         <View style={styles.date}>
           <Text style={styles.dateDay}>{useDateInSpanish()} </Text>
         </View>
@@ -28,7 +26,7 @@ export const Header = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 20,
+    padding: 10,
     alignItems: 'center',
   },
   imgContainer: {
@@ -39,19 +37,21 @@ const styles = StyleSheet.create({
   },
   img: {
     borderRadius: 100,
+    width: 50,
+    height: 50,
   },
   texts: {
     marginLeft: 20,
   },
   name: {
-    fontSize: 25,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   date: {
       flexDirection: 'row'
   },
   dateDay: {
-      fontSize: 18,
+      fontSize: 15,
       color: 'green',
   }
 });

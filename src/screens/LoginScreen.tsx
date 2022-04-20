@@ -1,15 +1,13 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useContext, useState} from 'react';
-import {
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {Text, TextInput, View, TouchableOpacity, Alert} from 'react-native';
+import {getUniqueId} from 'react-native-device-info';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AuthContext} from '../context/AuthContext';
+import {LoginData} from '../interfaces/app-interfaces';
 import {AuthScreenLayout} from '../layouts/AuthScreenLayout';
-import { authStyles } from '../styles/authStyles';
+import {authStyles} from '../styles/authStyles';
 
 interface Props extends NativeStackScreenProps<any, any> {}
 interface Login {
@@ -18,23 +16,44 @@ interface Login {
 }
 
 export const LoginScreen = ({navigation}: Props) => {
-  const [form, setForm] = useState<Login>({id: '', password: ''});
-  const {authState, setAuthState} = useContext(AuthContext);
+  const [passVisible, setPassVisible] = useState<boolean>(false);
+  const [form, setForm] = useState<Login>({id: '79958852', password: '123456'});
+  const {singIn, user} = useContext(AuthContext);
 
-  const handleLogin = () => {
-    setAuthState({
-      ...authState,
-      isLoggedIn: true,
-    });
-    navigation.replace('Assistance');
+  const handleLogin = async () => {
+    if (form.id.length < 3 || form.password.length < 6) {
+      Alert.alert('Aviso', 'Identificación (min 3 letras) y Contraseña (min 6 letras) son obligatorios', [{
+        text: 'Ok'
+      }], {
+        onDismiss: () => {
+          return;
+        },
+      });
+      return;
+    }
+    const loginData: LoginData = {
+      user: form.id,
+      password: form.password,
+      deviceId: getUniqueId(),
+    };
+    try {
+      const success = await singIn(loginData);
+      const role = (await AsyncStorage.getItem('role')) || 'USER_ROLE';
+
+      if (success) {
+        if (role === 'ADMIN_ROLE') {
+          navigation.replace('Activate');
+        } else {
+          navigation.replace('Assistance');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleInputChange = (value: string, field: 'id' | 'password') => {
-    setForm({
-      ...form,
-      [field]: value,
-    });
-  };
+  const handleInputChange = (value: string, field: 'id' | 'password') =>
+    setForm({...form, [field]: value});
 
   return (
     <AuthScreenLayout>
@@ -48,7 +67,7 @@ export const LoginScreen = ({navigation}: Props) => {
             onChangeText={val => handleInputChange(val, 'id')}
             value={form.id}
             placeholder="identificación"
-            placeholderTextColor="#727272"
+            placeholderTextColor="#ccc"
             keyboardType="numeric"
           />
         </View>
@@ -60,9 +79,16 @@ export const LoginScreen = ({navigation}: Props) => {
             onChangeText={val => handleInputChange(val, 'password')}
             value={form.password}
             placeholder="contraseña"
-            placeholderTextColor="#727272"
+            placeholderTextColor="#ccc"
             autoCapitalize="none"
-            secureTextEntry
+            secureTextEntry={!passVisible}
+          />
+          <Icon
+            style={{position: 'absolute', right: 20}}
+            name={passVisible ? 'eye-off' : 'eye'}
+            color="white"
+            size={20}
+            onPress={() => setPassVisible(!passVisible)}
           />
         </View>
         <TouchableOpacity style={authStyles.loginButton} onPress={handleLogin}>
@@ -70,7 +96,7 @@ export const LoginScreen = ({navigation}: Props) => {
         </TouchableOpacity>
         <View style={authStyles.linksWrapper}>
           <TouchableOpacity>
-            <Text style={authStyles.smallLink}>recordar contraseña</Text>
+            <Text style={authStyles.smallLink}>cambiar contraseña</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.replace('Register')}>
             <Text style={authStyles.smallLink}>registrarme</Text>
@@ -80,4 +106,3 @@ export const LoginScreen = ({navigation}: Props) => {
     </AuthScreenLayout>
   );
 };
-

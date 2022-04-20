@@ -48,6 +48,6 @@ export const authStyles = StyleSheet.create({
     marginTop: 10,
   },
   smallLink: {
-    color: '#fff',
+    color: '#333',
   },
 });

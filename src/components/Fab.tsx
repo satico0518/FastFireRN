@@ -28,8 +28,8 @@ export const Fab: FC<Props> = ({
           <Icon
             name={iconName}
             color="white"
-            size={20}
-            style={{marginRight: 10}}
+            size={13}
+            style={{marginRight: 20}}
           />
         )}
         {text && <Text style={styles.text}>{text}</Text>}
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 15,
+    fontWeight: 'bold'
   },
 });
