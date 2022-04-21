@@ -11,7 +11,7 @@ import {
 import ffApi from '../api';
 import {Fab} from '../components/Fab';
 import {Role, User} from '../interfaces/app-interfaces';
-import { translateRoles } from '../utils';
+import {translateRoles} from '../utils';
 
 const Item = ({_id, identification, name, role, setUsers}: any) => {
   const activateUser = (
@@ -19,24 +19,29 @@ const Item = ({_id, identification, name, role, setUsers}: any) => {
     name: string,
     role: Role = 'USER_ROLE',
   ) => {
-    Alert.alert('Aviso!', `Confirma activación de ${name} como ${translateRoles(role)}?`, [
-      {
-        text: 'Cancelar',
-      },
-      {
-        text: 'Confirmar',
-        onPress: async () => {
-          await ffApi.put(`/users/${_id}`, {
-            isActive: true,
-            role,
-          });
-          setUsers((users: User[]) => {
-            return users.filter(u => u._id !== _id);
-          });
+    Alert.alert(
+      'Aviso!',
+      `Confirma activación de ${name} como ${translateRoles(role)}?`,
+      [
+        {
+          text: 'Cancelar',
         },
-      },
-    ]);
+        {
+          text: 'Confirmar',
+          onPress: async () => {
+            await ffApi.put(`/users/${_id}`, {
+              isActive: true,
+              role,
+            });
+            setUsers((users: User[]) => {
+              return users.filter(u => u._id !== _id);
+            });
+          },
+        },
+      ],
+    );
   };
+
   return (
     <View style={styles.item}>
       <View style={{flexDirection: 'row'}}>
@@ -89,24 +94,24 @@ const renderItem = ({item}: any, setUsers: any) => (
 export const ActivateScreen = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-const getInactiveUsers = async () => {
-      try {
-        const data = await ffApi.get<User[]>('/users/inactive');
-        setUsers(data.data);
-      } catch (error: any) {
-        console.error(error);
-        Alert.alert('Aviso!', error.response.data.error, [{text: 'OK'}]);
-      }
-    };
+  const getInactiveUsers = async () => {
+    try {
+      const data = await ffApi.get<User[]>('/users/inactive');
+      setUsers(data.data);
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert('Aviso!', error.response.data.error, [{text: 'OK'}]);
+    }
+  };
   useEffect(() => {
     getInactiveUsers();
   }, []);
 
-  const onRefresh = async() => {
+  const onRefresh = async () => {
     setIsRefreshing(true);
     await getInactiveUsers();
     setIsRefreshing(false);
-  }
+  };
 
   return (
     <View style={{flex: 1}}>
@@ -119,7 +124,23 @@ const getInactiveUsers = async () => {
           refreshing={isRefreshing}
         />
       ) : (
-        <Text>No hay usuarios pendientes por activación</Text>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+          }}>
+          <Text style={{fontSize: 18}}>
+            No hay usuarios pendientes por activación
+          </Text>
+          <Fab
+            text="Verificar"
+            onPress={getInactiveUsers}
+            backColor="#F00"
+            style={{height: 50, marginTop: 20}}
+          />
+        </View>
       )}
     </View>
   );
