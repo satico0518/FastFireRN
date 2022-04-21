@@ -3,8 +3,8 @@ import React, {createContext, useState} from 'react';
 export interface EmployeeAssistanceState {
     isIn: boolean;
     location: any;
-    inTime?: string;
-    outTime?: string;
+    inTime?: number;
+    outTime?: number;
 }
 
 export const EmployeeAssistanceInitState: EmployeeAssistanceState = {

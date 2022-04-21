@@ -93,7 +93,7 @@ const getInactiveUsers = async () => {
       try {
         const data = await ffApi.get<User[]>('/users/inactive');
         setUsers(data.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
         Alert.alert('Aviso!', error.response.data.error, [{text: 'OK'}]);
       }

@@ -8,69 +8,121 @@ import {
   View,
 } from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {
-  EmployeeAssistanceContext,
-  EmployeeAssistanceState,
-} from '../context/EmployeeAssistanceContext';
-import {PermissionContext} from '../context/PermissionContext';
-import MapView, {Marker} from 'react-native-maps';
-import {Location, useLocation} from '../hooks/useLocation';
+import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {LoadingScreen} from './LoadingScreen';
 import {Fab} from '../components/Fab';
 import {Header} from '../components/Header';
 import {Hr} from '../components/Hr';
-import Icon from 'react-native-vector-icons/Ionicons';
+import {Turn, TurnItem} from '../components/TurnItem';
+import {Map} from '../components/Map';
+import {AuthContext} from '../context/AuthContext';
+import {PermissionContext} from '../context/PermissionContext';
+import {useLocation} from '../hooks/useLocation';
 import {convertMsToHM} from '../utils';
-import {History, HistoryItem} from '../components/HistoryItem';
+import ffApi from '../api';
 
 export const AssitanceScreen = () => {
+  const {user} = useContext(AuthContext);
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
-  const {employeeAssistanceState, setEmployeeAssistanceState} = useContext(
-    EmployeeAssistanceContext,
-  );
-
-  const {isIn} = employeeAssistanceState;
   const {hasLocation, currentPosition, getCurrentLocation} = useLocation();
-  const [history, setHistory] = useState<History[]>([]);
+  const [turns, setTurns] = useState<Turn[]>([]);
   const [totalHours, setTotalHours] = useState<number>(0);
+  const [isIn, setIsIn] = useState<string>();
+  const [currentDay, setCurrentDay] = useState<string>('Hoy');
 
   useEffect(() => {
-    if (history.length > 0) {
-      let acum = 0;
-      history.forEach(h => {
-        if (h.endTime) {
-          acum += Math.floor(h.endTime - h.initTime);
-        }
-      });
-      setTotalHours(acum);
+    getTurns();
+  }, []);
+
+  const getTurns = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const turnsApi = await ffApi.get(`/turns/${user?._id}?date=${today}`);
+      if (turnsApi.data.length > 0) {
+        setTurns(turnsApi.data);
+        setIsIn(((await AsyncStorage.getItem('isIn')) as string) || 'false');
+        const totalHrs = turnsApi.data.reduce(
+          (acum: number, turn: Turn) => acum + (turn.totalTimeMins as number),
+          0,
+        );
+        setTotalHours(totalHrs * 60000);
+      }
+    } catch (error) {
+      Alert.alert('Aviso!', 'Error al cargar turnos!', [{text: 'Aceptar'}]);
     }
-  }, [history]);
+  };
+
+  const saveIn = async () => {
+    try {
+      const turn = await ffApi.post('/turns', {
+        user: user?._id,
+        locationIn: {
+          lat: currentPosition.lat.toString(),
+          long: currentPosition.long.toString(),
+        },
+        timeIn: Date.now(),
+      });
+      getCurrentLocation();
+      setTurns([
+        ...turns,
+        {
+          timeIn: Date.now(),
+          locationIn: currentPosition,
+        },
+      ]);
+      AsyncStorage.setItem('isIn', 'true');
+      setIsIn('true');
+      AsyncStorage.setItem('currentTurnId', turn.data._id);
+      getTurns();
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert('Aviso!', error.response.data.error.msg);
+    }
+  };
+
+  const saveOut = async () => {
+    try {
+      await ffApi.put(`/turns/${await AsyncStorage.getItem('currentTurnId')}`, {
+        timeOut: Date.now(),
+        locationOut: {
+          lat: currentPosition.lat,
+          long: currentPosition.long,
+        },
+      });
+      const index = turns.findIndex(h => !h.timeOut);
+      getCurrentLocation();
+      setTurns([
+        ...turns.slice(0, index),
+        {
+          ...turns[index],
+          timeOut: Date.now(),
+          locationOut: currentPosition,
+        },
+        ...turns.slice(index + 1),
+      ]);
+      AsyncStorage.setItem('isIn', 'false');
+      setIsIn('false');
+      getTurns();
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert('Aviso!', error.response.data.error.msg);
+    }
+  };
 
   const handleIn = () => {
     Alert.alert('Aviso', 'Registrar inicio de turno?', [
       {
         text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => {
+          return;
+        },
         style: 'cancel',
       },
       {
         text: 'SI',
-        onPress: () => {
-          const newState: EmployeeAssistanceState = {
-            isIn: true,
-            inTime: new Date().toLocaleString(),
-            location: 'work',
-          };
-          getCurrentLocation();
-          setHistory([
-            ...history,
-            {
-              initTime: new Date().getTime(),
-              initLocation: currentPosition,
-            },
-          ]);
-          setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
-        },
+        onPress: saveIn,
       },
     ]);
   };
@@ -79,30 +131,12 @@ export const AssitanceScreen = () => {
     Alert.alert('Aviso!', 'Registrar fin de turno?', [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => {},
         style: 'cancel',
       },
       {
         text: 'SI',
-        onPress: () => {
-          const newState: EmployeeAssistanceState = {
-            isIn: false,
-            outTime: new Date().toLocaleString(),
-            location: 'work',
-          };
-          const index = history.findIndex(h => !h.endTime);
-          getCurrentLocation();
-          setHistory([
-            ...history.slice(0, index),
-            {
-              ...history[index],
-              endTime: new Date().getTime(),
-              endLocation: currentPosition,
-            },
-            ...history.slice(index + 1),
-          ]);
-          setEmployeeAssistanceState({...employeeAssistanceState, ...newState});
-        },
+        onPress: saveOut,
       },
     ]);
   };
@@ -114,44 +148,20 @@ export const AssitanceScreen = () => {
           <Header />
           {hasLocation ? (
             <>
-              <MapView
-                showsUserLocation
-                followsUserLocation
-                userInterfaceStyle="dark"
-                style={{height: Dimensions.get('screen').height * 0.2}}
-                initialRegion={{
-                  latitude: currentPosition.lat,
-                  longitude: currentPosition.long,
-                  latitudeDelta: 0.009,
-                  longitudeDelta: 0.009,
-                }}>
-                <Marker
-                  coordinate={{
-                    latitude: currentPosition.lat,
-                    longitude: currentPosition.long,
-                    latitudeDelta: 0.3,
-                    longitudeDelta: 0.3,
-                  }}
-                  title="Usted está aquí"
-                  description="En este punto se guardará su registro"
-                  image={require('../assets/pin.png')}
-                />
-              </MapView>
-              {isIn ? (
+              <Map currentPosition={currentPosition} />
+              {isIn === 'true' ? (
                 <Fab
-                  iconName="log-out-outline"
                   backColor="#fd5e13"
                   text="Registrar Salida"
                   onPress={handleOut}
-                  style={styles.actionButton}
+                  style={styles.buttonOut}
                 />
               ) : (
                 <Fab
-                  iconName="hammer-outline"
                   backColor="#00c060"
                   text="Registrar Ingreso"
                   onPress={handleIn}
-                  style={styles.actionButton}
+                  style={styles.buttonIn}
                 />
               )}
               <Hr />
@@ -165,14 +175,19 @@ export const AssitanceScreen = () => {
                   width: Dimensions.get('screen').width * 0.7,
                   alignSelf: 'center',
                 }}>
-                <TouchableOpacity
-                  style={styles.arrows}>
-                  <Icon name="arrow-back-sharp" size={20} />
+                <TouchableOpacity style={styles.arrows}>
+                  <Icon name="arrow-back" size={20} />
                 </TouchableOpacity>
-                <Text style={{fontWeight: 'bold'}}>Hoy</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 18}}>
+                  {currentDay}
+                </Text>
                 <TouchableOpacity
-                  style={styles.arrows}>
-                  <Icon name="arrow-forward-sharp" size={20} />
+                  style={[
+                    styles.arrows,
+                    currentDay === 'Hoy' ? styles.disabledArrow : null,
+                  ]}
+                  disabled={currentDay === 'Hoy'}>
+                  {currentDay !== 'Hoy' ? <Icon name="arrow-forward" size={20} /> : <Text />}
                 </TouchableOpacity>
               </View>
               <View style={styles.registryContent}>
@@ -189,10 +204,14 @@ export const AssitanceScreen = () => {
                     {convertMsToHM(totalHours)} hrs
                   </Text>
                 </View>
-                <View style={{height: Dimensions.get('screen').height * 0.2}}>
+                <View
+                  style={{
+                    height: Dimensions.get('screen').height * 0.2,
+                    marginTop: 10,
+                  }}>
                   <ScrollView>
-                    {history.map(h => (
-                      <HistoryItem key={h.initTime} {...h} />
+                    {turns.map(h => (
+                      <TurnItem key={h.timeIn} {...h} />
                     ))}
                   </ScrollView>
                 </View>
@@ -244,17 +263,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  actionButton: {
-    width: Dimensions.get('screen').width * 0.9,
+  buttonIn: {
+    width: Dimensions.get('screen').width * 0.5,
     height: 30,
     marginVertical: 10,
-    alignSelf: 'center',
+    paddingLeft: 20,
+  },
+  buttonOut: {
+    width: Dimensions.get('screen').width * 0.5,
+    height: 30,
+    marginVertical: 10,
+    alignSelf: 'flex-end',
+    marginRight: 20,
   },
   arrows: {
     borderColor: '#555555',
     borderWidth: 1,
     borderRadius: 5,
     padding: 3,
+  },
+  disabledArrow: {
+    borderWidth: 0,
   },
   registryTitle: {
     top: 10,

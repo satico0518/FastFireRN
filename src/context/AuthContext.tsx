@@ -50,14 +50,13 @@ export const AuthProvider = ({children}: any) => {
 
   const singUp = async ({identification, name, password, deviceId}: RegisterData) => {
     try {
-      const response = await ffApi.post<RegisterResponse>('/users', {
+      await ffApi.post<RegisterResponse>('/users', {
         identification,
         name,
         password,
 		    deviceId,
       });
-      console.log(response.data);
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Aviso!', error.response.data.error.errors.map((e: any) => e.msg).join(', '));
       console.error(error.response.data);
     }
@@ -69,7 +68,6 @@ export const AuthProvider = ({children}: any) => {
         password,
 		    deviceId,
       });
-      console.log('response: ', response.data);
       
       if(response.status === 200) {
         dispatch({type: 'signIn', payload: response.data });
@@ -79,7 +77,7 @@ export const AuthProvider = ({children}: any) => {
         return true;
       }
       return false;
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Aviso!', error.response.data.error, [{
         text: 'OK'
       }]);

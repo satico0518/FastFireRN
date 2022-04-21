@@ -6,7 +6,7 @@ const baseURL = 'https://fast-fire-api.herokuapp.com/api';
 const ffApi = axios.create({baseURL});
 
 ffApi.interceptors.request.use(
-    async (config) => {
+    async (config: any) => {
         const token = await AsyncStorage.getItem('token');
         if (token) {
             config.headers['x-auth-token'] = token;
