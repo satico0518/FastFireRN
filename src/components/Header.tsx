@@ -4,14 +4,23 @@ import { AuthContext } from '../context/AuthContext';
 import useDateInSpanish from '../hooks/useDateInSpanish';
 
 export const Header = () => {
-  const {user} = useContext(AuthContext)
+  const {user} = useContext(AuthContext);
+  
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
-        <Image
-          style={styles.img}
-          source={require('../assets/avatar.png')}
-        />
+      {user?.img ? (
+            <Image
+              source={{uri: user.img}}
+              borderRadius={50}
+              style={styles.img}
+            />
+          ) : (
+            <Image
+              source={require('../assets/avatar.png')}
+              style={styles.img}
+            />
+          )}
       </View>
       <View style={styles.texts}>
         <Text style={styles.name}>Hola, {user?.name}!</Text>
@@ -33,10 +42,9 @@ const styles = StyleSheet.create({
     padding: 5,
     borderColor: '#ff1c1c',
     borderWidth: 5,
-    borderRadius: 100,
+    borderRadius: 50,
   },
   img: {
-    borderRadius: 100,
     width: 50,
     height: 50,
   },

@@ -69,7 +69,7 @@ export const AuthProvider = ({children}: any) => {
 		    deviceId,
       });
       
-      if(response.status === 200) {
+      if(response.status === 200) {        
         dispatch({type: 'signIn', payload: response.data });
         
         await AsyncStorage.setItem('token', response.data.token);

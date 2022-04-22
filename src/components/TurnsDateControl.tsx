@@ -9,8 +9,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import {addDaysToDate} from '../utils';
 
-export const TurnsDateControl = ({getTurns, queryDate, setQueryDate}: any) => {
-  const [currentDay, setCurrentDay] = useState<string>('Hoy');
+export const TurnsDateControl = ({getTurns, queryDate, setQueryDate, currentDay, setCurrentDay}: any) => {
 
   const onGoBack = () => {
     setQueryDate(addDaysToDate(queryDate, -1));

@@ -51,10 +51,19 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
     <DrawerContentScrollView>
       <View style={styles.avatarContainer}>
         <View style={styles.imgWrapper}>
-          <Image
-            style={styles.avatar}
-            source={require('../assets/avatar.png')}
-          />
+        {user?.img ? (
+            <Image
+              defaultSource={require('../assets/avatar.png')}
+              source={{uri: user?.img}}
+              borderRadius={50}
+              style={styles.avatar}
+            />
+          ) : (
+            <Image
+              source={require('../assets/avatar.png')}
+              style={styles.avatar}
+            />
+          )}
         </View>
         <TouchableOpacity
           style={{position: 'relative', marginTop: -25, marginLeft: 95}}>
@@ -88,12 +97,12 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
             </TouchableOpacity>
           </>
         )}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.menuItem}
           onPress={() => navigation.navigate('Settings')}>
           <Icon name="settings" color="red" size={20} />
           <Text style={styles.menuText}> Ajustes</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.menuItem} onPress={handleLogOut}>
           <Icon name="log-out" color="red" size={20} />
           <Text style={styles.menuText}>Cerrar Sesion</Text>
