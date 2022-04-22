@@ -10,11 +10,15 @@ import {LoadingScreen} from '../screens/LoadingScreen';
 import {AuthContext} from '../context/AuthContext';
 import {RegisterScreen} from '../screens/RegisterScreen';
 import {ActivateScreen} from '../screens/ActivateScreen';
+import {UsersScreen} from '../screens/UsersScreen';
+import {UserDetailScreen} from '../screens/UserDetailScreen';
 
 type StackNavigatorParams = {
   Login: undefined;
   Register: undefined;
   Activate: undefined;
+  Users: undefined;
+  UserDetail: undefined;
   Home: undefined;
   Assistance: undefined;
 };
@@ -33,13 +37,12 @@ export const StackNavigator = () => {
 
   const getInitialRoute = () => {
     if (status === 'authenticated') {
-      if (user?.role === 'ADMIN_ROLE')
-        return 'Home';
+      if (user?.role === 'ADMIN_ROLE') return 'Home';
 
       return 'Assistance';
     }
     return 'Login';
-  }
+  };
 
   return (
     <Stack.Navigator
@@ -47,48 +50,61 @@ export const StackNavigator = () => {
       screenOptions={{
         contentStyle: {backgroundColor: 'white'},
       }}>
-      {status === 'authenticated' ? (
-        <>
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              headerTitleAlign: 'center',
-            }}
-          />
-          <Stack.Screen
-            name="Activate"
-            component={ActivateScreen}
-            options={{
-              headerTitle: 'Activación de Usuarios',
-              headerTintColor: '#535353',
-              headerBackVisible: false,
-            }}
-          />
-          <Stack.Screen
-            name="Assistance"
-            component={AssitanceScreen}
-            options={{
-              headerTitle: 'Registro de asistencia',
-              headerTintColor: '#535353',
-              headerBackVisible: false,
-            }}
-          />
-        </>
-      ) : (
-        <>
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{headerShown: false}}
-          />
-        </>
-      )}
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          headerTitleAlign: 'center',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Activate"
+        component={ActivateScreen}
+        options={{
+          headerTitle: 'Activación de Usuarios',
+          headerTintColor: '#535353',
+          headerBackVisible: false,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Users"
+        component={UsersScreen}
+        options={{
+          headerTitle: 'Administración Usuarios',
+          headerTintColor: '#535353',
+          headerBackVisible: false,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="UserDetail"
+        component={UserDetailScreen}
+        options={{
+          headerTitle: 'Detalle de Usuario',
+          headerTintColor: '#535353',
+        }}
+      />
+      <Stack.Screen
+        name="Assistance"
+        component={AssitanceScreen}
+        options={{
+          headerTitle: 'Registro de asistencia',
+          headerTintColor: '#535353',
+          headerBackVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };

@@ -71,6 +71,12 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
               <Icon name="person-add" color="red" size={20} />
               <Text style={styles.menuText}>Activar Usuarios</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('Users')}>
+              <Icon name="people" color="red" size={20} />
+              <Text style={styles.menuText}>Administrar Usuarios</Text>
+            </TouchableOpacity>
           </>
         ) : (
           <>

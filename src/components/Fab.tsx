@@ -7,6 +7,7 @@ interface Props {
   onPress: () => void;
   backColor: string;
   text?: string;
+  fontSize?: number;
   iconName?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -16,6 +17,7 @@ export const Fab: FC<Props> = ({
   backColor,
   iconName = '',
   text = '',
+  fontSize = 15,
   style = {},
 }) => {
   return (
@@ -32,7 +34,12 @@ export const Fab: FC<Props> = ({
             style={{marginRight: 20}}
           />
         )}
-        {text && <Text style={styles.text}>{text}</Text>}
+        {text && (
+          <Text
+            style={[ styles.text, { fontSize }]}>
+            {text}
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -56,7 +63,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
-    fontSize: 15,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 });

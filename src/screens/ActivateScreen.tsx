@@ -1,19 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  Image,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Alert, FlatList, StatusBar, StyleSheet, Text, View} from 'react-native';
 import ffApi from '../api';
 import {Fab} from '../components/Fab';
 import {Role, User} from '../interfaces/app-interfaces';
 import {translateRoles} from '../utils';
 
-const Item = ({_id, identification, name, role, setUsers}: any) => {
+const Item = ({_id, identification, name, setUsers}: any) => {
   const activateUser = (
     _id: string,
     name: string,
@@ -45,16 +37,9 @@ const Item = ({_id, identification, name, role, setUsers}: any) => {
   return (
     <View style={styles.item}>
       <View style={{flexDirection: 'row'}}>
-        <View style={styles.imgWrapper}>
-          <Image
-            source={require('../assets/avatar.png')}
-            style={{width: 50, height: 50}}
-          />
-        </View>
         <View style={styles.content}>
           <Text style={styles.name}>{name}</Text>
-          <Text style={styles.title}>CC {identification}</Text>
-          <Text style={styles.title}>{translateRoles(role)}</Text>
+          <Text style={styles.text}>ID {identification}</Text>
         </View>
       </View>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -63,18 +48,21 @@ const Item = ({_id, identification, name, role, setUsers}: any) => {
           backColor="#00c060"
           onPress={() => activateUser(_id, name)}
           style={styles.button}
+          fontSize={13}
         />
         <Fab
           text="Supervisor"
           backColor="#f87822"
           onPress={() => activateUser(_id, name, 'SUPERVISOR_ROLE')}
           style={styles.button}
+          fontSize={13}
         />
         <Fab
           text="Admin"
           backColor="#c00d00"
           onPress={() => activateUser(_id, name, 'ADMIN_ROLE')}
           style={styles.button}
+          fontSize={13}
         />
       </View>
     </View>
@@ -94,6 +82,7 @@ const renderItem = ({item}: any, setUsers: any) => (
 export const ActivateScreen = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
   const getInactiveUsers = async () => {
     try {
       const data = await ffApi.get<User[]>('/users/inactive');
@@ -151,38 +140,27 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
   },
-  imgWrapper: {
-    borderColor: '#ccc',
-    borderWidth: 2,
-    borderRadius: 50,
-    padding: 3,
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   content: {
     marginLeft: 10,
   },
   item: {
     padding: 10,
-    marginVertical: 5,
     marginHorizontal: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
   name: {
-    fontSize: 20,
+    fontSize: 17,
     color: '#3b3b3b',
     fontWeight: 'bold',
   },
-  title: {
+  text: {
     fontSize: 12,
     color: '#5a5a5a',
   },
   button: {
     width: 100,
-    height: 30,
-    marginVertical: 10,
+    height: 20,
+    marginTop: 5,
   },
 });
