@@ -12,11 +12,6 @@ export const useLocation = () => {
   useEffect(() => getCurrentLocation(), []);
 
   const getCurrentLocation = () => {
-    const config = {
-      enableHighAccuracy: true,
-      timeout: 20000,
-      maximumAge: 3600000,
-    };
     Geolocation.getCurrentPosition(
       ({coords}) => {
         setCurrentPosition({lat: coords.latitude, long: coords.longitude});
@@ -24,9 +19,13 @@ export const useLocation = () => {
       },
       err => {
         setHasLocation(false);
+        console.log('error getLoc');
         console.error(err);
       },
-      config,
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+      },
     );
   };
 

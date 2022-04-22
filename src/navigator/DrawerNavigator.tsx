@@ -11,7 +11,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StackNavigator} from './StackNavigator';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AuthContext} from '../context/AuthContext';
-import { SettingsScreen } from '../screens/SettingsScreen';
+import {SettingsScreen} from '../screens/SettingsScreen';
 
 interface Props extends DrawerScreenProps<any, any> {}
 
@@ -31,10 +31,10 @@ export const DrawerNavigator = () => {
         options={{title: 'FastFire App', headerTitleAlign: 'center'}}
       />
       <Drawer.Screen
-      name="Settings"
-      component={SettingsScreen}
-      options={{title: 'Settings', headerTitleAlign: 'center'}}
-    />
+        name="Settings"
+        component={SettingsScreen}
+        options={{title: 'Settings', headerTitleAlign: 'center'}}
+      />
     </Drawer.Navigator>
   );
 };
@@ -51,7 +51,7 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
     <DrawerContentScrollView>
       <View style={styles.avatarContainer}>
         <View style={styles.imgWrapper}>
-        {user?.img ? (
+          {user?.img ? (
             <Image
               defaultSource={require('../assets/avatar.png')}
               source={{uri: user?.img}}
@@ -72,19 +72,28 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
         <Text style={styles.userName}>{user?.name}</Text>
       </View>
       <View style={styles.menuContainer}>
-        {user?.role === 'ADMIN_ROLE' ? (
-          <>
+        {user?.role === 'ADMIN_ROLE' ||
+          (user?.role === 'SUPERVISOR_ROLE' && (
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => navigation.navigate('Activate')}>
               <Icon name="person-add" color="red" size={20} />
               <Text style={styles.menuText}>Activar Usuarios</Text>
             </TouchableOpacity>
+          ))}
+        {user?.role === 'ADMIN_ROLE' ? (
+          <>
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => navigation.navigate('Users')}>
               <Icon name="people" color="red" size={20} />
               <Text style={styles.menuText}>Administrar Usuarios</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('Activate')}>
+              <Icon name="person-add" color="red" size={20} />
+              <Text style={styles.menuText}>Activar Usuarios</Text>
             </TouchableOpacity>
           </>
         ) : (

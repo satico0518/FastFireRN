@@ -125,6 +125,7 @@ export const UsersScreen = () => {
 
 const styles = StyleSheet.create({
   list: {
+    flex: 1,
     paddingBottom: 15,
   },
   item: {

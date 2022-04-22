@@ -22,6 +22,7 @@ export const useAssistance = () => {
         if (turnsApi.data.length && !turnsApi.data[turnsApi.data.length - 1].timeOut) {
           setIsIn('true');
           AsyncStorage.setItem('isIn', 'true');
+          AsyncStorage.setItem('currentTurnId', turnsApi.data[turnsApi.data.length - 1]._id);
         } else {
           setIsIn(((await AsyncStorage.getItem('isIn')) as string) || 'false');
         }

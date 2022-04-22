@@ -12,7 +12,7 @@ export const UserDetailScreen = ({route}: any) => {
   const menu = [
     {id: 1, name: 'Turnos', icon: 'construct'},
     {id: 2, name: 'Nomina', icon: 'analytics'},
-    {id: 3, name: 'RRHH', icon: 'accessibility'},
+    {id: 3, name: 'RRHH', icon: 'man'},
     {id: 4, name: 'Certificados', icon: 'newspaper'},
     {id: 5, name: 'Asignar Obra', icon: 'pin'},
     {id: 6, name: 'Editar', icon: 'create'},
@@ -20,8 +20,8 @@ export const UserDetailScreen = ({route}: any) => {
 
   const renderMenu = ({item}: any) => (
     <TouchableOpacity style={styles.menuItem}>
-      <Icon name={item.icon} size={25} style={{}} color="#fff" />
-      <Text style={{color: '#fff', fontSize: 18, fontWeight: '600'}}>{item.name}</Text>
+      <Icon name={item.icon} size={21} color="#616161" />
+      <Text style={{color: '#fff', fontSize: 13, fontWeight: '600', marginTop: 10}}>{item.name}</Text>
     </TouchableOpacity>
   );
 
@@ -33,7 +33,6 @@ export const UserDetailScreen = ({route}: any) => {
             <Image
               defaultSource={require('../assets/avatar.png')}
               source={{uri: img}}
-              borderRadius={50}
               style={{width: 100, height: 100}}
             />
           ) : (
@@ -64,6 +63,9 @@ export const UserDetailScreen = ({route}: any) => {
       <View style={{marginVertical: 30}}>
         <FlatList data={menu} renderItem={renderMenu} horizontal />
       </View>
+      <View style={{flex: 1}}>
+            
+      </View>
     </View>
   );
 };
@@ -78,7 +80,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 10,
+    paddingHorizontal: 10,
   },
   name: {
     fontSize: 20,
