@@ -12,7 +12,7 @@ import {User} from '../interfaces/app-interfaces';
 import {authStyles} from '../styles/authStyles';
 import {translateRoles} from '../utils';
 
-const SearchBar = ({users, tempUsers, setFilteredUsers, setUsers}: any) => {
+const SearchBar = ({users, setFilteredUsers}: any) => {
   const [word, setWord] = useState('');
 
   const onChangeWord = (word: string) => {      
@@ -46,12 +46,9 @@ const SearchBar = ({users, tempUsers, setFilteredUsers, setUsers}: any) => {
 
 const Item = (props: User) => {
   const {
-    _id,
     identification,
     name,
     role,
-    createdDate,
-    deviceId,
     img,
     isActive,
   } = props;
@@ -66,10 +63,19 @@ const Item = (props: User) => {
           styles.imgWrapper,
           {borderColor: isActive ? '#00c060' : '#F00'},
         ]}>
-        <Image
-          source={require('../assets/avatar.png')}
-          style={{width: 50, height: 50}}
-        />
+        {img ? (
+            <Image
+              defaultSource={require('../assets/avatar.png')}
+              source={{uri: img}}
+              borderRadius={50}
+              style={{width: 50, height: 50}}
+            />
+          ) : (
+            <Image
+              source={require('../assets/avatar.png')}
+              style={{width: 50, height: 50}}
+            />
+          )}
       </View>
       <View style={styles.content}>
         <View
@@ -89,19 +95,29 @@ const Item = (props: User) => {
 
 export const UsersScreen = () => {
   const {users, filteredUsers, setFilteredUsers, setUsers, getAllUsers} = useUsers();
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
     getAllUsers();
   }, []);
 
+  
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await getAllUsers();
+    setIsRefreshing(false);
+  };
+
   return (
-    <View>
+    <View style={{flex: 1, paddingBottom: 20}}>
       <SearchBar users={users} tempUsers={filteredUsers} setFilteredUsers={setFilteredUsers} setUsers={setUsers} />
       <FlatList
         keyExtractor={item => item._id}
         style={styles.list}
         data={filteredUsers}
         renderItem={({item}: any) => <Item {...item} />}
+        onRefresh={onRefresh}
+        refreshing={isRefreshing}
       />
     </View>
   );
@@ -109,12 +125,13 @@ export const UsersScreen = () => {
 
 const styles = StyleSheet.create({
   list: {
-    paddingVertical: 10,
+    flex: 1,
+    paddingBottom: 15,
   },
   item: {
     width: '95%',
     paddingHorizontal: 20,
-    paddingVertical: 5,
+    paddingVertical: 3,
     flexDirection: 'row',
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,

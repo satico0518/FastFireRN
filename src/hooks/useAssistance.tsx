@@ -13,13 +13,19 @@ export const useAssistance = () => {
   const [totalHours, setTotalHours] = useState<number>(0);
   const [isIn, setIsIn] = useState<string>();
 
-  const getTurns = async (date: Date) => {
+  const getTurns = async (date: Date = new Date()) => {
     try {
       const day = date.toISOString().split('T')[0];
       const turnsApi = await ffApi.get(`/turns/${user?._id}?date=${day}`);
       if (turnsApi.data.length > 0) {
         setTurns(turnsApi.data);
-        setIsIn(((await AsyncStorage.getItem('isIn')) as string) || 'false');
+        if (turnsApi.data.length && !turnsApi.data[turnsApi.data.length - 1].timeOut) {
+          setIsIn('true');
+          AsyncStorage.setItem('isIn', 'true');
+          AsyncStorage.setItem('currentTurnId', turnsApi.data[turnsApi.data.length - 1]._id);
+        } else {
+          setIsIn(((await AsyncStorage.getItem('isIn')) as string) || 'false');
+        }
         const totalHrs = turnsApi.data.reduce(
           (acum: number, turn: Turn) => acum + (turn.totalTimeMins as number),
           0,
@@ -92,6 +98,7 @@ export const useAssistance = () => {
     turns,
     totalHours,
     isIn,
+    setIsIn,
     getTurns,
     saveIn,
     saveOut,

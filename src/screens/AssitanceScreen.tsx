@@ -11,12 +11,15 @@ import {TurnList} from '../components/TurnList';
 import {TurnsDateControl} from '../components/TurnsDateControl';
 import {useLocation} from '../hooks/useLocation';
 import {useAssistance} from '../hooks/useAssistance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AssitanceScreen = () => {
   const [queryDate, setQueryDate] = useState(new Date());
+  const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
   const {hasLocation, currentPosition} = useLocation();
-  const {turns, totalHours, isIn, getTurns, saveIn, saveOut} = useAssistance();
+  const {turns, totalHours, isIn, getTurns, saveIn, saveOut} =
+    useAssistance();
 
   useEffect(() => {
     getTurns(queryDate);
@@ -60,7 +63,7 @@ export const AssitanceScreen = () => {
           {hasLocation ? (
             <>
               <Map currentPosition={currentPosition} />
-              {isIn === 'true' ? (
+              {isIn === 'true' && currentDay === 'Hoy' ? (
                 <Fab
                   backColor="#fd5e13"
                   text="Registrar Salida"
@@ -68,12 +71,14 @@ export const AssitanceScreen = () => {
                   style={styles.buttonOut}
                 />
               ) : (
-                <Fab
-                  backColor="#00c060"
-                  text="Registrar Ingreso"
-                  onPress={handleIn}
-                  style={styles.buttonIn}
-                />
+                currentDay === 'Hoy' && (
+                  <Fab
+                    backColor="#00c060"
+                    text="Registrar Ingreso"
+                    onPress={handleIn}
+                    style={styles.buttonIn}
+                  />
+                )
               )}
               <Hr />
               <Text style={styles.registryTitle}>Registro de turnos</Text>
@@ -81,6 +86,8 @@ export const AssitanceScreen = () => {
                 getTurns={getTurns}
                 queryDate={queryDate}
                 setQueryDate={setQueryDate}
+                currentDay={currentDay}
+                setCurrentDay={setCurrentDay}
               />
               <TurnList turns={turns} totalHours={totalHours} />
             </>

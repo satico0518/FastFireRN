@@ -19,10 +19,12 @@ export const useLocation = () => {
       },
       err => {
         setHasLocation(false);
+        console.log('error getLoc');
         console.error(err);
       },
       {
         enableHighAccuracy: true,
+        timeout: 20000,
       },
     );
   };
