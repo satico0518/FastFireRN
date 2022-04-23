@@ -13,10 +13,10 @@ export const useAssistance = () => {
   const [totalHours, setTotalHours] = useState<number>(0);
   const [isIn, setIsIn] = useState<string>();
 
-  const getTurns = async (date: Date = new Date()) => {
+  const getTurns = async (userID: string = user?._id as string, date: Date = new Date()) => {
     try {
       const day = date.toISOString().split('T')[0];
-      const turnsApi = await ffApi.get(`/turns/${user?._id}?date=${day}`);
+      const turnsApi = await ffApi.get(`/turns/${userID}?date=${day}`);
       if (turnsApi.data.length > 0) {
         setTurns(turnsApi.data);
         if (turnsApi.data.length && !turnsApi.data[turnsApi.data.length - 1].timeOut) {

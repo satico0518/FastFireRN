@@ -14,13 +14,13 @@ export const TurnsDateControl = ({getTurns, queryDate, setQueryDate, currentDay,
   const onGoBack = () => {
     setQueryDate(addDaysToDate(queryDate, -1));
     setCurrentDay(currentDay === 'Hoy' ? 'Ayer' : 'Hoy');
-    getTurns(queryDate);
+    getTurns(undefined, queryDate);
   };
 
   const onGoForward = () => {
     setQueryDate(addDaysToDate(queryDate, 1));
     setCurrentDay(currentDay === 'Ayer' ? 'Hoy' : 'Ayer');
-    getTurns(queryDate);
+    getTurns(undefined, queryDate);
   };
 
   return (
