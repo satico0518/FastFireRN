@@ -32,4 +32,11 @@ export const translateRoles = (role: Role): string => {
 export const addDaysToDate = (date: Date, days: number) => {
   date.setDate(date.getDate() + days);
   return date;
-}
+};
+
+export const getLocaleTimeFromDateNumber = (dateNumber: number) => {
+  const date = new Date(dateNumber);
+  const hr = date.getHours().toLocaleString();
+  const mins = date.getMinutes().toLocaleString();
+  return `${hr.length < 2 ? '0' + hr : hr}:${ mins.length < 2 ? '0' + mins : mins}`;
+};

@@ -74,12 +74,20 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
       <View style={styles.menuContainer}>
         {user?.role === 'ADMIN_ROLE' ||
           (user?.role === 'SUPERVISOR_ROLE' && (
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => navigation.navigate('Activate')}>
-              <Icon name="person-add" color="red" size={20} />
-              <Text style={styles.menuText}>Activar Usuarios</Text>
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => navigation.navigate('Activate')}>
+                <Icon name="person-add" color="red" size={20} />
+                <Text style={styles.menuText}>Activar Usuarios</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => navigation.navigate('RegisterOper')}>
+                <Icon name="person-add" color="red" size={20} />
+                <Text style={styles.menuText}>Registrar Ingresos</Text>
+              </TouchableOpacity>
+            </>
           ))}
         {user?.role === 'ADMIN_ROLE' ? (
           <>
@@ -94,6 +102,12 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
               onPress={() => navigation.navigate('Activate')}>
               <Icon name="person-add" color="red" size={20} />
               <Text style={styles.menuText}>Activar Usuarios</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('RegisterOper')}>
+              <Icon name="color-wand" color="red" size={20} />
+              <Text style={styles.menuText}>Registrar Ingresos</Text>
             </TouchableOpacity>
           </>
         ) : (

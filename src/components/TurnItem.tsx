@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Location} from '../hooks/useLocation';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { convertMsToHM } from '../utils';
+import { convertMsToHM, getLocaleTimeFromDateNumber } from '../utils';
 
 export interface Turn {
   _id?: string;
@@ -13,24 +13,18 @@ export interface Turn {
   totalTimeMins?: number;
 }
 
-const getHourFromTime = (time: number): string => {
-  const date = new Date(time);
-  const minutes = date.getMinutes();
-  return date.getHours() + ':' + (minutes < 10 ? '0' + minutes : minutes);
-};
-
-export const TurnItem = (turn: Turn) => {
+export const TurnItem = ({turn}:{turn: Turn}) => {
   return (
     <View style={styles.itemWrapper}>
       <View style={{flexDirection: 'row'}}>
-        <Text style={styles.textIn}>{getHourFromTime(turn.timeIn)}</Text>
+        <Text style={styles.textIn}>{getLocaleTimeFromDateNumber(turn.timeIn)}</Text>
         <Icon
           name="arrow-forward-outline"
           size={20}
           style={{marginHorizontal: 7}}
         />
         <Text style={styles.textOut}>
-          {turn.timeOut ? getHourFromTime(turn.timeOut as number) : '...'}
+          {turn.timeOut ? getLocaleTimeFromDateNumber(turn.timeOut as number) : '...'}
         </Text>
       </View>
       <View>

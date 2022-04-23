@@ -11,18 +11,16 @@ import {TurnList} from '../components/TurnList';
 import {TurnsDateControl} from '../components/TurnsDateControl';
 import {useLocation} from '../hooks/useLocation';
 import {useAssistance} from '../hooks/useAssistance';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AssitanceScreen = () => {
   const [queryDate, setQueryDate] = useState(new Date());
   const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
   const {hasLocation, currentPosition} = useLocation();
-  const {turns, totalHours, isIn, getTurns, saveIn, saveOut} =
-    useAssistance();
+  const {turns, totalHours, isIn, getTurns, saveIn, saveOut} = useAssistance();
 
   useEffect(() => {
-    getTurns(queryDate);
+    getTurns(undefined, queryDate);
   }, []);
 
   const handleIn = () => {

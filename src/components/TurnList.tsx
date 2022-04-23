@@ -23,8 +23,8 @@ export const TurnList = ({turns, totalHours}: any) => {
           marginTop: 10,
         }}>
         <ScrollView>
-          {turns.map((h: Turn) => (
-            <TurnItem key={h.timeIn} {...h} />
+          {turns.map((turn: Turn) => (
+            <TurnItem key={turn.timeIn} turn={turn} />
           ))}
         </ScrollView>
       </View>

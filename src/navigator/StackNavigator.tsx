@@ -12,11 +12,13 @@ import {RegisterScreen} from '../screens/RegisterScreen';
 import {ActivateScreen} from '../screens/ActivateScreen';
 import {UsersScreen} from '../screens/UsersScreen';
 import {UserDetailScreen} from '../screens/UserDetailScreen';
+import { RegisterOperScreen } from '../screens/RegisterOperScreen';
 
 type StackNavigatorParams = {
   Login: undefined;
   Register: undefined;
   Activate: undefined;
+  RegisterOper: undefined;
   Users: undefined;
   UserDetail: undefined;
   Home: undefined;
@@ -91,6 +93,15 @@ export const StackNavigator = () => {
         component={AssitanceScreen}
         options={{
           headerTitle: 'Registro de asistencia',
+          headerTintColor: '#535353',
+          headerBackVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="RegisterOper"
+        component={RegisterOperScreen}
+        options={{
+          headerTitle: 'Assitencia Operarios',
           headerTintColor: '#535353',
           headerBackVisible: false,
         }}

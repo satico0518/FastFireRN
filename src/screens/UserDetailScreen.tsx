@@ -1,29 +1,52 @@
-import React from 'react';
-import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, {useState} from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import {TabBar, TabView} from 'react-native-tab-view';
+import {TurnsRoute} from '../components/TurnsRoute';
 import {User} from '../interfaces/app-interfaces';
 import {translateRoles} from '../utils';
 
 export const UserDetailScreen = ({route}: any) => {
-  const {identification, name, role, createdDate, isActive, img}: User =
+  const {_id, identification, name, role, createdDate, isActive, img}: User =
     route.params.user;
+  const [index, setIndex] = useState(0);
+  const layout = useWindowDimensions();
 
-  const menu = [
-    {id: 1, name: 'Turnos', icon: 'construct'},
-    {id: 2, name: 'Nomina', icon: 'analytics'},
-    {id: 3, name: 'RRHH', icon: 'man'},
-    {id: 4, name: 'Certificados', icon: 'newspaper'},
-    {id: 5, name: 'Asignar Obra', icon: 'pin'},
-    {id: 6, name: 'Editar', icon: 'create'},
-  ];
+  const [routes] = useState([
+    {key: 'turns', title: 'Turnos'},
+    {key: 'payroll', title: 'Nomina'},
+    {key: 'edit', title: 'Editar'},
+  ]);
 
-  const renderMenu = ({item}: any) => (
-    <TouchableOpacity style={styles.menuItem}>
-      <Icon name={item.icon} size={21} color="#616161" />
-      <Text style={{color: '#fff', fontSize: 13, fontWeight: '600', marginTop: 10}}>{item.name}</Text>
-    </TouchableOpacity>
+  const PayrolldRoute = () => (
+    <View style={{flex: 1, backgroundColor: '#ececec'}}>
+      <Text>Nómina</Text>
+    </View>
   );
+
+  const EditRoute = () => (
+    <View style={{flex: 1, backgroundColor: '#ececec'}}>
+      <Text>Editar</Text>
+    </View>
+  );
+
+  const renderScene = ({route}: any) => {
+    switch (route.key) {
+      case 'turns':
+        return <TurnsRoute _id={_id} />;
+      case 'payroll':
+        return <PayrolldRoute />;
+      case 'edit':
+        return <EditRoute />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <View style={styles.mainWrapper}>
@@ -60,11 +83,23 @@ export const UserDetailScreen = ({route}: any) => {
           </View>
         </View>
       </View>
-      <View style={{marginVertical: 30}}>
-        <FlatList data={menu} renderItem={renderMenu} horizontal />
-      </View>
       <View style={{flex: 1}}>
-            
+        <TabView
+          style={{marginTop: 20}}
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{width: layout.width}}
+          renderTabBar={props => (
+            <TabBar
+              contentContainerStyle={{backgroundColor: '#e4e4e4'}}
+              inactiveColor="#808080"
+              activeColor="#f00"
+              pressColor="#fff"
+              {...props}
+            />
+          )}
+        />
       </View>
     </View>
   );
