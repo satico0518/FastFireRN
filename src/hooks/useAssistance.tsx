@@ -14,7 +14,11 @@ export const useAssistance = () => {
   const [isIn, setIsIn] = useState<string>();
 
   const getTurns = async (userID: string = user?._id as string, date: Date = new Date()) => {
+    // Elimina data del storage por si se borra un turno iniciado de manera manual en la BD
+    // AsyncStorage.removeItem('isIn');
+    // AsyncStorage.removeItem('currentTurnId');
     try {
+      getCurrentLocation();
       const day = date.toISOString().split('T')[0];
       const turnsApi = await ffApi.get(`/turns/${userID}?date=${day}`);
       if (turnsApi.data.length > 0) {
@@ -39,6 +43,7 @@ export const useAssistance = () => {
 
   const saveIn = async () => {
     try {
+      getCurrentLocation();
       const turn = await ffApi.post('/turns', {
         user: user?._id,
         locationIn: {
@@ -66,6 +71,10 @@ export const useAssistance = () => {
   };
 
   const saveOut = async () => {
+    getCurrentLocation();
+    console.log('curr poss lat: ', currentPosition.lat);
+    console.log('curr poss long: ', currentPosition.long);
+    
     try {
       await ffApi.put(`/turns/${await AsyncStorage.getItem('currentTurnId')}`, {
         timeOut: Date.now(),

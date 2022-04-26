@@ -19,6 +19,7 @@
     "axios": "^0.26.1",
     "react": "17.0.2",
     "react-native": "0.68.0",
+    "react-native-calendars": "^1.1282.0",
     "react-native-device-info": "^8.7.0",
     "react-native-gesture-handler": "^2.3.2",
     "react-native-maps": "0.30.1",
