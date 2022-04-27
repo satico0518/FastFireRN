@@ -5,8 +5,8 @@ import ffApi from '../api';
 import {Turn, TurnItem} from './TurnItem';
 import {Calendar, DateData, LocaleConfig} from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Fab } from './Fab';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Fab} from './Fab';
 
 LocaleConfig.locales['es'] = {
   monthNames: [
@@ -53,13 +53,13 @@ LocaleConfig.defaultLocale = 'es';
 
 export const TurnsRoute = ({_id}: {_id: string}) => {
   const [turns, setTurns] = useState<Turn[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [isCalendarVisible, setCalendarVisibility] = useState(true);
 
-  const getTurns = async (date: DateData) => {      
+  const getTurns = async (date: DateData) => {
     try {
-      const turnsApi = await ffApi.get(
-        `/turns/${_id}?date=${date.dateString}`,
-      ); 
+      setSelectedDate(date.dateString);
+      const turnsApi = await ffApi.get(`/turns/${_id}?date=${date.dateString}`);
 
       setTurns(turnsApi.data);
       setCalendarVisibility(false);
@@ -70,9 +70,13 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
 
   return (
     <View style={{flex: 1, backgroundColor: '#ececec', padding: 20}}>
-      <Text style={{marginBottom: 10, fontWeight: '600', color: '#3a3a3a'}}>
-        Seleccione una fecha o un rango de fechas
-      </Text>
+      {selectedDate === '' ? (
+        <Text style={{marginBottom: 10, fontWeight: '600', color: '#3a3a3a'}}>
+          Seleccione una fecha
+        </Text>
+      ) : (
+        <Text style={{marginBottom: 10, fontWeight: '600', color: '#3a3a3a'}}>Fecha Seleccionada: {selectedDate}</Text>
+      )}
       {isCalendarVisible ? (
         <Calendar
           minDate={'2022-04-01'}
@@ -81,73 +85,60 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
           monthFormat={'MMMM yyyy'}
           disableMonthChange={false}
           firstDay={1}
-          markedDates={{
-            // '2022-04-19': {
-            //   selected: true,
-            //   marked: true,
-            //   dotColor: 'red',
-            //   selectedColor: '#f00',
-            //   selectedTextColor: '#fff',
-            // },
-            // '2022-04-20': {
-            //   selected: true,
-            //   marked: true,
-            //   dotColor: 'red',
-            //   selectedColor: '#f00',
-            //   selectedTextColor: '#fff',
-            // },
-            // '2022-04-21': {
-            //   selected: true,
-            //   marked: true,
-            //   dotColor: 'red',
-            //   selectedColor: '#f00',
-            //   selectedTextColor: '#fff',
-            // },
-          }}
+          markedDates={
+            {
+              // '2022-04-19': {
+              //   selected: true,
+              //   marked: true,
+              //   dotColor: 'red',
+              //   selectedColor: '#f00',
+              //   selectedTextColor: '#fff',
+              // },
+              // '2022-04-20': {
+              //   selected: true,
+              //   marked: true,
+              //   dotColor: 'red',
+              //   selectedColor: '#f00',
+              //   selectedTextColor: '#fff',
+              // },
+              // '2022-04-21': {
+              //   selected: true,
+              //   marked: true,
+              //   dotColor: 'red',
+              //   selectedColor: '#f00',
+              //   selectedTextColor: '#fff',
+              // },
+            }
+          }
           disableAllTouchEventsForDisabledDays={true}
           theme={{
             arrowColor: '#f00',
             todayTextColor: '#f00',
           }}
         />
-      ) : (<Fab 
-        style={{height: 45}}
-        backColor='#f00'
-        text='Ver Calendario'
-        onPress={() => setCalendarVisibility(true)}
-      />)}
+      ) : (
+        <Fab
+          style={{height: 45}}
+          backColor="#f00"
+          text="Ver Calendario"
+          onPress={() => {setCalendarVisibility(true); setSelectedDate('')}}
+        />
+      )}
       {turns.length ? (
         <FlatList
           data={turns}
           renderItem={({item}) => <TurnItem turn={item} />}
         />
       ) : (
-        !isCalendarVisible && <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
-            <Text style={{ color: '#3a3a3a'}}>No hay turnos para estas fechas</Text>
-            </View>
-      )}
-      {/* <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Seleccione Mes</Text>
-            <Pressable
-              style={[
-                styles.button,
-                styles.buttonClose,
-                {height: 40, width: '100%'},
-              ]}
-              onPress={() => setModalVisible(false)}>
-              <Text style={styles.textStyle}>Buscar</Text>
-            </Pressable>
+        !isCalendarVisible && (
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{color: '#3a3a3a'}}>
+              No hay turnos para estas fechas
+            </Text>
           </View>
-        </View>
-      </Modal> */}
+        )
+      )}
     </View>
   );
 };
