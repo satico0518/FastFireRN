@@ -70,7 +70,7 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
 
   return (
     <View style={{flex: 1, backgroundColor: '#ececec', padding: 20}}>
-      <Text style={{marginBottom: 10, fontWeight: '600'}}>
+      <Text style={{marginBottom: 10, fontWeight: '600', color: '#3a3a3a'}}>
         Seleccione una fecha o un rango de fechas
       </Text>
       {isCalendarVisible ? (
@@ -123,7 +123,7 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
         />
       ) : (
         !isCalendarVisible && <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
-            <Text>No hay turnos para estas fechas</Text>
+            <Text style={{ color: '#3a3a3a'}}>No hay turnos para estas fechas</Text>
             </View>
       )}
       {/* <Modal

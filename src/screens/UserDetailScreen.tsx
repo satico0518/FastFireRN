@@ -120,18 +120,23 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#3a3a3a',
   },
   id: {
     fontSize: 12,
+    color: '#3a3a3a',
   },
   role: {
     fontSize: 14,
+    color: '#3a3a3a',
   },
   state: {
     fontSize: 14,
+    color: '#3a3a3a',
   },
   date: {
     fontSize: 14,
+    color: '#3a3a3a',
   },
   menuItem: {
     padding: 10,

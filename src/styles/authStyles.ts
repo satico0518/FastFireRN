@@ -4,11 +4,11 @@ export const authStyles = StyleSheet.create({
   text: {
     fontSize: 28,
     fontWeight: '600',
-    color: 'white',
+    color: '#3a3a3a',
   },
   text2: {
     fontSize: 13,
-    color: 'white',
+    color: '#3a3a3a',
     marginBottom: 30,
   },
   inputWrapper: {

@@ -149,16 +149,20 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     marginLeft: 30,
+    color: '#3a3a3a',
   },
   name: {
     fontSize: 15,
     fontWeight: 'bold',
+    color: '#3a3a3a',
   },
   id: {
     fontSize: 12,
+    color: '#3a3a3a',
   },
   role: {
     fontSize: 14,
     alignSelf: 'flex-end',
+    color: '#3a3a3a',
   },
 });

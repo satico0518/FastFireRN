@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import {
   createDrawerNavigator,
@@ -6,12 +6,21 @@ import {
   DrawerContentScrollView,
   DrawerScreenProps,
 } from '@react-navigation/drawer';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Alert, Image, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  launchCamera,
+  launchImageLibrary,
+  ImagePickerResponse,
+  CameraOptions,
+  Asset,
+} from 'react-native-image-picker';
 import {StackNavigator} from './StackNavigator';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AuthContext} from '../context/AuthContext';
 import {SettingsScreen} from '../screens/SettingsScreen';
+import ffApi from '../api';
+import {useNavigation} from '@react-navigation/native';
 
 interface Props extends DrawerScreenProps<any, any> {}
 
@@ -41,34 +50,114 @@ export const DrawerNavigator = () => {
 
 const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
   const {logOut, user} = useContext(AuthContext);
+  const [tempUri, setTempUri] = useState<string>();
+  useEffect(() => {
+    setTempUri(user?.img);
+  }, []);
+
   const handleLogOut = () => {
     logOut();
     navigation.closeDrawer();
     navigation.navigate('Login');
   };
 
+  const uploadPhoto = async (data: Asset, uid: string) => {
+    console.log('img size: ', data.fileSize);
+    const body = {
+      uid,
+      type: data.type,
+      base64: data.base64,
+    };
+
+    try {
+      ffApi.put(`/uploads/avatar`, body);
+    } catch (error) {
+      console.log({error});
+    }
+  };
+
+  const selectGalleryImage = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        quality: 0.5,
+      },
+      async (resp: ImagePickerResponse) => {
+        console.log('resp: asets', resp.assets);
+        if (resp.didCancel) return;
+        if (!resp.assets?.length) return;
+
+        setTempUri(resp.assets[0].uri);
+        // console.log('resp.assets: ', resp.assets);
+        // const imgToUpload = {
+        //   uri: resp.assets[0].uri,
+        //   type: resp.assets[0].type,
+        //   name: resp.assets[0].fileName,
+        // };
+        // const formData = new FormData();
+        // const uid = user!._id;
+        // formData.append('file', imgToUpload);
+        // console.log('imgToUpload: ', imgToUpload);
+        // const respose = await ffApi.put(`/uploads/avatar/${uid}`, formData, {
+        //   headers: {
+        //     'content-type': 'multipart/form-data',
+        //   },
+        // });
+        // console.log('response: ', respose);
+        // handleLogOut();
+      },
+    );
+  };
+
+  const takePhoto = async () => {
+    const options: CameraOptions = {
+      mediaType: 'photo',
+      maxWidth: 500,
+      maxHeight: 750,
+      quality: 0.5,
+      cameraType: 'front',
+      includeBase64: true,
+    };
+    try {
+      const resp: ImagePickerResponse = await launchCamera(options);
+      if (resp.didCancel) return;
+      if (!resp.assets) return;
+
+      setTempUri(resp.assets[0].uri);
+
+      uploadPhoto(resp.assets[0], user?._id as string);
+    } catch (error) {
+      console.error('error xxx: ', error);
+      Alert.alert('Error', 'Error subiendo imagen', [{text: 'ok'}]);
+    }
+  };
+
   return (
     <DrawerContentScrollView>
       <View style={styles.avatarContainer}>
-        <View style={styles.imgWrapper}>
-          {user?.img ? (
-            <Image
-              defaultSource={require('../assets/avatar.png')}
-              source={{uri: user?.img}}
-              borderRadius={50}
-              style={styles.avatar}
-            />
-          ) : (
-            <Image
-              source={require('../assets/avatar.png')}
-              style={styles.avatar}
-            />
-          )}
+        <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+          {/* <TouchableOpacity onPress={selectGalleryImage} style={{}}>
+            <Icon name="image" size={15} color="#fff" />
+          </TouchableOpacity> */}
+          <View style={styles.imgWrapper}>
+            {user?.img ? (
+              <Image
+                defaultSource={require('../assets/avatar.png')}
+                source={{uri: tempUri}}
+                borderRadius={50}
+                style={styles.avatar}
+              />
+            ) : (
+              <Image
+                source={require('../assets/avatar.png')}
+                style={styles.avatar}
+              />
+            )}
+          </View>
+          <TouchableOpacity onPress={takePhoto}>
+            <Icon name="camera" size={20} color="#fff" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={{position: 'relative', marginTop: -25, marginLeft: 95}}>
-          <Icon name="camera" size={25} color="#fff" />
-        </TouchableOpacity>
         <Text style={styles.userName}>{user?.name}</Text>
       </View>
       <View style={styles.menuContainer}>
@@ -151,5 +240,10 @@ const styles = StyleSheet.create({
   userName: {fontSize: 18, fontWeight: '700', color: '#ebebeb', marginTop: 7},
   menuContainer: {marginHorizontal: 10, paddingVertical: 10, marginTop: 20},
   menuItem: {marginVertical: 10, flexDirection: 'row'},
-  menuText: {fontSize: 15, marginLeft: 30, fontWeight: 'bold'},
+  menuText: {
+    fontSize: 15,
+    marginLeft: 30,
+    fontWeight: 'bold',
+    color: '#3a3a3a',
+  },
 });
