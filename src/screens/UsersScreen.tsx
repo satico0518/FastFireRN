@@ -1,11 +1,6 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
-import {Alert, Dimensions, Image, StyleSheet, Text, View} from 'react-native';
-import {
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import { Dimensions, Image, StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useUsers} from '../hooks/useUsers';
 import {User} from '../interfaces/app-interfaces';
@@ -15,7 +10,7 @@ import {translateRoles} from '../utils';
 const SearchBar = ({users, setFilteredUsers}: any) => {
   const [word, setWord] = useState('');
 
-  const onChangeWord = (word: string) => {      
+  const onChangeWord = (word: string) => {
     setWord(word);
     if (word.length) {
       const filteredUsers = users.filter(
@@ -93,14 +88,9 @@ const Item = (props: User) => {
   );
 };
 
-export const UsersScreen = ({navigation}: any) => {
+export const UsersScreen = () => {
   const {users, filteredUsers, setFilteredUsers, setUsers, getAllUsers} = useUsers();
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const isFocused = useIsFocused();
-
-  if (isFocused) {
-    getAllUsers();    
-  }
   
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -108,8 +98,10 @@ export const UsersScreen = ({navigation}: any) => {
     setIsRefreshing(false);
   };
 
+  useEffect(() => {
+    getAllUsers();
+  }, [])
   
-
   return (
     <View style={{flex: 1, paddingBottom: 20}}>
       <SearchBar users={users} tempUsers={filteredUsers} setFilteredUsers={setFilteredUsers} setUsers={setUsers} />

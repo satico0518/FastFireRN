@@ -15,7 +15,7 @@ import {TurnsRoute} from '../components/TurnsRoute';
 import {User} from '../interfaces/app-interfaces';
 import {translateRoles} from '../utils';
 
-export const UserDetailScreen = ({route}: any) => {
+export const UserDetailScreen = ({route, navigation}: any) => {
   const {
     _id,
     identification,
@@ -61,14 +61,13 @@ export const UserDetailScreen = ({route}: any) => {
                   {
                     text: 'Ok',
                     onPress: () => {
+                      navigation.goBack();
                       return;
                     },
                   },
                 ],
                 {onDismiss: () => {
-                  console.log('disss');
-                  
-                  useNavigation().goBack()
+                  navigation.goBack();
                 }}
               );
             } catch (error) {

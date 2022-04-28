@@ -13,9 +13,11 @@ import {ActivateScreen} from '../screens/ActivateScreen';
 import {UsersScreen} from '../screens/UsersScreen';
 import {UserDetailScreen} from '../screens/UserDetailScreen';
 import { RegisterOperScreen } from '../screens/RegisterOperScreen';
+import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
 
 type StackNavigatorParams = {
   Login: undefined;
+  ChangePassword: undefined;
   Register: undefined;
   Activate: undefined;
   RegisterOper: undefined;
@@ -114,6 +116,11 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="Register"
         component={RegisterScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

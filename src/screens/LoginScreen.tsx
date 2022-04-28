@@ -95,7 +95,7 @@ export const LoginScreen = ({navigation}: Props) => {
           <Text style={authStyles.loginButtonText}>Ingresar</Text>
         </TouchableOpacity>
         <View style={authStyles.linksWrapper}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.replace('ChangePassword')}>
             <Text style={authStyles.smallLink}>cambiar contraseña</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.replace('Register')}>
