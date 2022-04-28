@@ -24,7 +24,7 @@ export const Map = ({currentPosition}: any) => {
         }}
         title="Usted está aquí"
         description="En este punto se guardará su registro"
-        image={require('../assets/pin.png')}
+        image={require('../assets/pin.png')} 
       />
     </MapView>
   );

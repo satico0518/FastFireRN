@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert, Dimensions, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {isLocationEnabled} from 'react-native-device-info';
 import {LoadingScreen} from './LoadingScreen';
 import {Fab} from '../components/Fab';
 import {Header} from '../components/Header';
@@ -23,7 +24,14 @@ export const AssitanceScreen = () => {
     getTurns(undefined, queryDate);
   }, []);
 
-  const handleIn = () => {
+  const handleIn = async () => {
+    const isLocEnable = await isLocationEnabled();
+    if (!isLocEnable) {
+      Alert.alert('Aviso!', 'Por favor active su GPS', [
+        {text: 'OK', onPress: () => {return}}        
+      ]);
+      return;
+    }
     Alert.alert('Aviso', 'Registrar inicio de turno?', [
       {
         text: 'Cancel',
@@ -39,7 +47,14 @@ export const AssitanceScreen = () => {
     ]);
   };
 
-  const handleOut = () => {
+  const handleOut = async () => {
+    const isLocEnable = await isLocationEnabled();
+    if (!isLocEnable) {
+      Alert.alert('Aviso!', 'Por favor active su GPS', [
+        {text: 'OK', onPress: () => {return}}        
+      ]);
+      return;
+    }
     Alert.alert('Aviso!', 'Registrar fin de turno?', [
       {
         text: 'Cancelar',
@@ -151,6 +166,7 @@ const styles = StyleSheet.create({
   registryTitle: {
     top: 10,
     fontSize: 15,
+    color: '#3a3a3a',
     alignSelf: 'center',
   },
 });

@@ -24,6 +24,7 @@ export type Role = 'USER_ROLE' | 'SUPERVISOR_ROLE' | 'ADMIN_ROLE';
 export interface User {
     _id:            string;
     deviceId:       string;
+    deviceIdFailed: string | null;
     identification: string;
     name:           string;
     role:           Role;

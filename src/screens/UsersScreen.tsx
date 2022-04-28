@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {Alert, Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import {
   FlatList,
@@ -93,20 +93,22 @@ const Item = (props: User) => {
   );
 };
 
-export const UsersScreen = () => {
+export const UsersScreen = ({navigation}: any) => {
   const {users, filteredUsers, setFilteredUsers, setUsers, getAllUsers} = useUsers();
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    getAllUsers();
-  }, []);
-
+  if (isFocused) {
+    getAllUsers();    
+  }
   
   const onRefresh = async () => {
     setIsRefreshing(true);
     await getAllUsers();
     setIsRefreshing(false);
   };
+
+  
 
   return (
     <View style={{flex: 1, paddingBottom: 20}}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
-import { convertMsToHM } from '../utils';
+import {convertMsToHM} from '../utils';
 import {Turn, TurnItem} from './TurnItem';
 
 export const TurnList = ({turns, totalHours}: any) => {
@@ -12,8 +12,10 @@ export const TurnList = ({turns, totalHours}: any) => {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <Text style={{fontWeight: 'bold', fontSize: 15}}>Tiempo acumulado</Text>
-        <Text style={{fontWeight: 'bold', fontSize: 18}}>
+        <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3a3a3a'}}>
+          Tiempo acumulado
+        </Text>
+        <Text style={{fontWeight: 'bold', fontSize: 18, color: '#3a3a3a'}}>
           {convertMsToHM(totalHours)} hrs
         </Text>
       </View>

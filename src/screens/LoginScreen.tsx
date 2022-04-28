@@ -17,7 +17,7 @@ interface Login {
 
 export const LoginScreen = ({navigation}: Props) => {
   const [passVisible, setPassVisible] = useState<boolean>(false);
-  const [form, setForm] = useState<Login>({id: '79958852', password: '123456'});
+  const [form, setForm] = useState<Login>({id: '', password: ''});
   const {singIn} = useContext(AuthContext);
 
   const handleLogin = async () => {

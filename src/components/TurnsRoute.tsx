@@ -79,8 +79,8 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
       )}
       {isCalendarVisible ? (
         <Calendar
-          minDate={'2022-04-01'}
-          maxDate={'2022-04-25'}
+          minDate={'2022-04-27'}
+          maxDate={new Date().toISOString().split('T')[0]}
           onDayPress={getTurns}
           monthFormat={'MMMM yyyy'}
           disableMonthChange={false}

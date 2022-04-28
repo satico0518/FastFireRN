@@ -9,8 +9,13 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import {addDaysToDate} from '../utils';
 
-export const TurnsDateControl = ({getTurns, queryDate, setQueryDate, currentDay, setCurrentDay}: any) => {
-
+export const TurnsDateControl = ({
+  getTurns,
+  queryDate,
+  setQueryDate,
+  currentDay,
+  setCurrentDay,
+}: any) => {
   const onGoBack = () => {
     setQueryDate(addDaysToDate(queryDate, -1));
     setCurrentDay(currentDay === 'Hoy' ? 'Ayer' : 'Hoy');
@@ -40,12 +45,14 @@ export const TurnsDateControl = ({getTurns, queryDate, setQueryDate, currentDay,
           currentDay === 'Ayer' ? styles.disabledArrow : null,
         ]}>
         {currentDay !== 'Ayer' ? (
-          <Icon name="arrow-back" size={20} />
+          <Icon name="arrow-back" color='#3a3a3a' size={20} />
         ) : (
           <Text />
         )}
       </TouchableOpacity>
-      <Text style={{fontWeight: 'bold', fontSize: 18}}>{currentDay}</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 18, color: '#3a3a3a'}}>
+        {currentDay}
+      </Text>
       <TouchableOpacity
         onPress={onGoForward}
         style={[
@@ -54,7 +61,7 @@ export const TurnsDateControl = ({getTurns, queryDate, setQueryDate, currentDay,
         ]}
         disabled={currentDay === 'Hoy'}>
         {currentDay !== 'Hoy' ? (
-          <Icon name="arrow-forward" size={20} />
+          <Icon name="arrow-forward" color='#3a3a3a' size={20} />
         ) : (
           <Text />
         )}

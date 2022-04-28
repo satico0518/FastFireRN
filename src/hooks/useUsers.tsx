@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import {useCallback, useEffect, useState} from 'react';
 import {Alert} from 'react-native';
 import ffApi from '../api';
 import {User} from '../interfaces/app-interfaces';
@@ -6,7 +7,7 @@ import {User} from '../interfaces/app-interfaces';
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-
+  
   const getAllUsers = async () => {
     try {
       const data = await ffApi.get<User[]>('/users');

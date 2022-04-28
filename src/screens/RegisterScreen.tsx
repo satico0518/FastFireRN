@@ -5,7 +5,7 @@ import {authStyles} from '../styles/authStyles';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AuthContext} from '../context/AuthContext';
-import {getUniqueId} from 'react-native-device-info';
+import {syncUniqueId} from 'react-native-device-info';
 import {RegisterData} from '../interfaces/app-interfaces';
 
 interface Props extends NativeStackScreenProps<any, any> {}
@@ -19,10 +19,10 @@ interface Register {
 export const RegisterScreen = ({navigation}: Props) => {
   const {singUp} = useContext(AuthContext);
   const [form, setForm] = useState<Register>({
-    id: '123',
-    name: 'abc',
-    password: '123456',
-    passwordConfirm: '123456',
+    id: '',
+    name: '',
+    password: '',
+    passwordConfirm: '',
   });
 
   const handleInputChange = (
@@ -35,15 +35,26 @@ export const RegisterScreen = ({navigation}: Props) => {
     });
   };
 
-  const handleRegister = () => {
-    if (form.id.length < 3 || form.name.length < 3 || form.password.length < 6) {
-      Alert.alert('Aviso', 'Identificación (min 3 letras), Nombre (minimo 3 letras) y Contraseña (min 6 letras) son obligatorios', [{
-        text: 'Ok'
-      }], {
-        onDismiss: () => {
-          return;
+  const handleRegister = async () => {
+    if (
+      form.id.length < 3 ||
+      form.name.length < 3 ||
+      form.password.length < 6
+    ) {
+      Alert.alert(
+        'Aviso',
+        'Identificación (min 3 letras), Nombre (minimo 3 letras) y Contraseña (min 6 letras) son obligatorios',
+        [
+          {
+            text: 'Ok',
+          },
+        ],
+        {
+          onDismiss: () => {
+            return;
+          },
         },
-      });
+      );
       return;
     }
     if (form.password !== form.passwordConfirm) {
@@ -60,7 +71,7 @@ export const RegisterScreen = ({navigation}: Props) => {
       );
       return;
     }
-    const deviceId = getUniqueId();
+    const deviceId = await syncUniqueId();
     const registerData: RegisterData = {
       identification: form.id,
       name: form.name,
@@ -68,7 +79,12 @@ export const RegisterScreen = ({navigation}: Props) => {
       deviceId,
     };
     singUp(registerData);
-    navigation.replace('Login');
+    Alert.alert(
+      'Aviso',
+      'Registro existoso! Por favor solicite su activación con su supervisor.',
+      [{text: 'Ok', onPress: () => navigation.replace('Login')}],
+      {onDismiss: () => navigation.replace('Login')},
+    );
   };
   return (
     <AuthScreenLayout>

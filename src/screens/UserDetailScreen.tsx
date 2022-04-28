@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
   Image,
@@ -5,15 +6,26 @@ import {
   Text,
   View,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {TabBar, TabView} from 'react-native-tab-view';
+import ffApi from '../api';
 import {TurnsRoute} from '../components/TurnsRoute';
 import {User} from '../interfaces/app-interfaces';
 import {translateRoles} from '../utils';
 
 export const UserDetailScreen = ({route}: any) => {
-  const {_id, identification, name, role, createdDate, isActive, img}: User =
-    route.params.user;
+  const {
+    _id,
+    identification,
+    name,
+    role,
+    createdDate,
+    isActive,
+    img,
+    deviceIdFailed,
+  }: User = route.params.user;
   const [index, setIndex] = useState(0);
   const layout = useWindowDimensions();
 
@@ -22,6 +34,58 @@ export const UserDetailScreen = ({route}: any) => {
     {key: 'payroll', title: 'Nomina'},
     {key: 'edit', title: 'Editar'},
   ]);
+
+  const handleChangeDeviceId = () => {
+    Alert.alert(
+      'Aviso!',
+      'El usuario intenta cambiar su dispositivo, autoriza el cambio?',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => {
+            return;
+          },
+        },
+        {
+          text: 'Autorizar',
+          onPress: async () => {
+            try {
+              await ffApi.put('auth/device', {
+                uid: _id,
+                deviceId: deviceIdFailed,
+              });
+              Alert.alert(
+                'Aviso!',
+                'Dispositivo cambiado, notifíquele al usuario que ya puede ingresar con el nuevo dispositivo',
+                [
+                  {
+                    text: 'Ok',
+                    onPress: () => {
+                      return;
+                    },
+                  },
+                ],
+                {onDismiss: () => {
+                  console.log('disss');
+                  
+                  useNavigation().goBack()
+                }}
+              );
+            } catch (error) {
+              Alert.alert('Error', 'Error al intentar cambiar dispositivo', [
+                {
+                  text: 'Ok',
+                  onPress: () => {
+                    return;
+                  },
+                },
+              ]);
+            }
+          },
+        },
+      ],
+    );
+  };
 
   const PayrolldRoute = () => (
     <View style={{flex: 1, backgroundColor: '#ececec'}}>
@@ -51,7 +115,8 @@ export const UserDetailScreen = ({route}: any) => {
   return (
     <View style={styles.mainWrapper}>
       <View style={styles.header}>
-        <View>
+        <View
+          style={{justifyContent: 'center', alignItems: 'center', height: 90}}>
           {img ? (
             <Image
               defaultSource={require('../assets/avatar.png')}
@@ -64,6 +129,20 @@ export const UserDetailScreen = ({route}: any) => {
               style={{width: 100, height: 100}}
             />
           )}
+          {deviceIdFailed && (
+            <TouchableOpacity
+              onPress={handleChangeDeviceId}
+              style={{
+                backgroundColor: '#F00',
+                padding: 3,
+                top: -5,
+                borderRadius: 5,
+              }}>
+              <Text style={{color: '#fff', fontWeight: 'bold'}}>
+                Cambiar Disp.
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.content}>
           <View
@@ -72,7 +151,7 @@ export const UserDetailScreen = ({route}: any) => {
               justifyContent: 'space-between',
             }}>
             <Text style={styles.name}>{name}</Text>
-            <Text style={styles.id}>ID {identification}</Text>
+            <Text style={styles.id}>ID: {identification}</Text>
             <Text style={styles.role}>Cargo: {translateRoles(role)}</Text>
             <Text style={styles.state}>
               Estado: {isActive ? 'Activo' : 'Inactivo'}
@@ -92,7 +171,7 @@ export const UserDetailScreen = ({route}: any) => {
           initialLayout={{width: layout.width}}
           renderTabBar={props => (
             <TabBar
-              contentContainerStyle={{backgroundColor: '#e4e4e4'}}
+              contentContainerStyle={{backgroundColor: '#e4e4e4', height: 38}}
               inactiveColor="#808080"
               activeColor="#f00"
               pressColor="#fff"
@@ -124,6 +203,10 @@ const styles = StyleSheet.create({
   },
   id: {
     fontSize: 12,
+    color: '#3a3a3a',
+  },
+  deviceId: {
+    fontSize: 10,
     color: '#3a3a3a',
   },
   role: {
