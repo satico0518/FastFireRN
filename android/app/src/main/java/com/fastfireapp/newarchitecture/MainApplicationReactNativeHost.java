@@ -1,4 +1,4 @@
-package com.fastfireapp.newarchitecture;
+package com.fastfiredecolombia2022.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.fastfireapp.BuildConfig;
-import com.fastfireapp.newarchitecture.components.MainComponentsRegistry;
-import com.fastfireapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.fastfiredecolombia2022.BuildConfig;
+import com.fastfiredecolombia2022.newarchitecture.components.MainComponentsRegistry;
+import com.fastfiredecolombia2022.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

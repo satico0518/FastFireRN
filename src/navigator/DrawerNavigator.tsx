@@ -4,13 +4,11 @@ import {
   createDrawerNavigator,
   DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerScreenProps,
 } from '@react-navigation/drawer';
 import {Alert, Image, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {
   launchCamera,
-  launchImageLibrary,
   ImagePickerResponse,
   CameraOptions,
   Asset,
@@ -20,9 +18,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {AuthContext} from '../context/AuthContext';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import ffApi from '../api';
-import {useNavigation} from '@react-navigation/native';
-
-interface Props extends DrawerScreenProps<any, any> {}
 
 const Drawer = createDrawerNavigator();
 
@@ -49,7 +44,7 @@ export const DrawerNavigator = () => {
 };
 
 const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
-  const {logOut, user} = useContext(AuthContext);
+  const {logOut, user, changePhoto} = useContext(AuthContext);
   const [tempUri, setTempUri] = useState<string>();
   useEffect(() => {
     setTempUri(user?.img);
@@ -62,7 +57,6 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
   };
 
   const uploadPhoto = async (data: Asset, uid: string) => {
-    console.log('img size: ', data.fileSize);
     const body = {
       uid,
       type: data.type,
@@ -70,43 +64,11 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
     };
 
     try {
-      ffApi.put(`/uploads/avatar`, body);
+      const resp = await ffApi.put(`/uploads/avatar`, body);
+      changePhoto(resp.data.model.img);      
     } catch (error) {
       console.log({error});
     }
-  };
-
-  const selectGalleryImage = () => {
-    launchImageLibrary(
-      {
-        mediaType: 'photo',
-        quality: 0.5,
-      },
-      async (resp: ImagePickerResponse) => {
-        console.log('resp: asets', resp.assets);
-        if (resp.didCancel) return;
-        if (!resp.assets?.length) return;
-
-        setTempUri(resp.assets[0].uri);
-        // console.log('resp.assets: ', resp.assets);
-        // const imgToUpload = {
-        //   uri: resp.assets[0].uri,
-        //   type: resp.assets[0].type,
-        //   name: resp.assets[0].fileName,
-        // };
-        // const formData = new FormData();
-        // const uid = user!._id;
-        // formData.append('file', imgToUpload);
-        // console.log('imgToUpload: ', imgToUpload);
-        // const respose = await ffApi.put(`/uploads/avatar/${uid}`, formData, {
-        //   headers: {
-        //     'content-type': 'multipart/form-data',
-        //   },
-        // });
-        // console.log('response: ', respose);
-        // handleLogOut();
-      },
-    );
   };
 
   const takePhoto = async () => {

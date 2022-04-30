@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import useDateInSpanish from '../hooks/useDateInSpanish';
 
 export const Header = () => {
-  const {user} = useContext(AuthContext);
+  const {user} = useContext(AuthContext);  
   
   return (
     <View style={styles.container}>

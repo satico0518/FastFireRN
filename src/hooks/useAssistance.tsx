@@ -3,15 +3,15 @@ import {Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Turn} from '../components/TurnItem';
 import {AuthContext} from '../context/AuthContext';
-import {useLocation} from './useLocation';
+import {Location, useLocation} from './useLocation';
 import ffApi from '../api';
 
 export const useAssistance = () => {
   const {user} = useContext(AuthContext);
-  const {currentPosition, getCurrentLocation} = useLocation();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [totalHours, setTotalHours] = useState<number>(0);
   const [isIn, setIsIn] = useState<string>();
+  const {getCurrentLocation} = useLocation();
 
   const getTurns = async (userID: string = user?._id as string, date: Date = new Date()) => {
     // Elimina data del storage por si se borra un turno iniciado de manera manual en la BD
@@ -41,9 +41,8 @@ export const useAssistance = () => {
     }
   };
 
-  const saveIn = async () => {
+  const saveIn = async (currentPosition: Location) => {
     try {
-      getCurrentLocation();
       const turn = await ffApi.post('/turns', {
         user: user?._id,
         locationIn: {
@@ -52,7 +51,6 @@ export const useAssistance = () => {
         },
         timeIn: Date.now(),
       });
-      getCurrentLocation();
       setTurns([
         ...turns,
         {
@@ -70,11 +68,7 @@ export const useAssistance = () => {
     }
   };
 
-  const saveOut = async () => {
-    getCurrentLocation();
-    console.log('curr poss lat: ', currentPosition.lat);
-    console.log('curr poss long: ', currentPosition.long);
-    
+  const saveOut = async (currentPosition: Location) => {
     try {
       await ffApi.put(`/turns/${await AsyncStorage.getItem('currentTurnId')}`, {
         timeOut: Date.now(),
@@ -84,7 +78,6 @@ export const useAssistance = () => {
         },
       });
       const index = turns.findIndex((h: Turn) => !h.timeOut);
-      getCurrentLocation();
       setTurns([
         ...turns.slice(0, index),
         {

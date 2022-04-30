@@ -9,6 +9,7 @@ export interface AuthState {
 
 type AuthAction =
   | {type: 'signIn'; payload: {token: string; user: User}}
+  | {type: 'changePhoto'; payload: string}
   | {type: 'addError'; payload: string}
   | {type: 'removeError'}
   | {type: 'authFail'}
@@ -46,8 +47,13 @@ export const authReducer = (
         errorMessage: '',
         status: 'authenticated',
         token: action.payload.token,
-        user: action.payload.user,
+        user: action.payload.user,        
       };
+    case 'changePhoto':
+      return {
+        ...state,
+        user: {...state.user, img: action.payload} as User
+      }
     default:
       return state;
   }

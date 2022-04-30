@@ -1,10 +1,27 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
+import {Location, useLocation} from '../hooks/useLocation';
 
-export const Map = ({currentPosition}: any) => {
+export const Map = () => {
+  const mapViewRef = useRef<MapView>();
+  const {currentPosition, followUser, stopFollowUser} = useLocation();
+
+  useEffect(() => {
+    mapViewRef.current?.animateCamera({
+      center: {latitude: currentPosition.lat, longitude: currentPosition.long},
+    });
+  }, [currentPosition]);
+
+  useEffect(() => {
+    followUser();
+
+    return () => {stopFollowUser()};
+  }, []);
+
   return (
     <MapView
+      ref={el => (mapViewRef.current = el!)}
       showsUserLocation
       followsUserLocation
       userInterfaceStyle="dark"
@@ -12,8 +29,8 @@ export const Map = ({currentPosition}: any) => {
       initialRegion={{
         latitude: currentPosition.lat,
         longitude: currentPosition.long,
-        latitudeDelta: 0.009,
-        longitudeDelta: 0.009,
+        latitudeDelta: 0.00099,
+        longitudeDelta: 0.00099,
       }}>
       <Marker
         coordinate={{
@@ -24,7 +41,7 @@ export const Map = ({currentPosition}: any) => {
         }}
         title="Usted está aquí"
         description="En este punto se guardará su registro"
-        image={require('../assets/pin.png')} 
+        image={require('../assets/pin.png')}
       />
     </MapView>
   );

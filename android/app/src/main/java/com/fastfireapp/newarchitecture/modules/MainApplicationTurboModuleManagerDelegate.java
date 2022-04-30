@@ -1,4 +1,4 @@
-package com.fastfireapp.newarchitecture.modules;
+package com.fastfiredecolombia2022.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

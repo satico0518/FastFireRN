@@ -1,4 +1,5 @@
-package com.fastfireapp;
+// package com.fastfireapp;
+package com.fastfiredecolombia2022;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

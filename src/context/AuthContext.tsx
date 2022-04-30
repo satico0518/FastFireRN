@@ -18,6 +18,7 @@ type AuthContextProps = {
   user: User | null;
   status: 'checking' | 'authenticated' | 'not-authenticated';
   singUp: (registerData: RegisterData) => void;
+  changePhoto: (uri: string) => void;
   singIn: (loginData: LoginData) => Promise<boolean>;
   logOut: () => void;
   removeError: () => void;
@@ -62,14 +63,14 @@ export const AuthProvider = ({children}: any) => {
     }
   };
   const singIn = async ({user, password, deviceId}: LoginData): Promise<boolean> => {
-    try {      
+    try {             
       const response = await ffApi.post<LoginResponse>('/auth/login', {
         user,
         password,
 		    deviceId,
       });
       
-      if(response.status === 200) {        
+      if(response.status === 200) {
         dispatch({type: 'signIn', payload: response.data });
         
         await AsyncStorage.setItem('token', response.data.token);
@@ -84,6 +85,9 @@ export const AuthProvider = ({children}: any) => {
       return false;    
     }
   };
+  const changePhoto = async (uri: string) => {
+    dispatch({type: 'changePhoto', payload: uri});
+  };
   const logOut = async () => {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('role');
@@ -97,6 +101,7 @@ export const AuthProvider = ({children}: any) => {
         ...state,
         singUp,
         singIn,
+        changePhoto,
         logOut,
         removeError,
       }}>

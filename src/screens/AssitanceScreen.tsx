@@ -10,15 +10,26 @@ import {Map} from '../components/Map';
 import {PermissionContext} from '../context/PermissionContext';
 import {TurnList} from '../components/TurnList';
 import {TurnsDateControl} from '../components/TurnsDateControl';
-import {useLocation} from '../hooks/useLocation';
+import {Location, useLocation} from '../hooks/useLocation';
 import {useAssistance} from '../hooks/useAssistance';
 
 export const AssitanceScreen = () => {
   const [queryDate, setQueryDate] = useState(new Date());
   const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
-  const {hasLocation, currentPosition} = useLocation();
+  const {hasLocation, currentPosition, followUser, stopFollowUser} = useLocation();
   const {turns, totalHours, isIn, getTurns, saveIn, saveOut} = useAssistance();
+  const [location, setLocation] = useState<Location>({lat: 0, long: 0})
+
+  useEffect(() => {
+    setLocation(currentPosition);
+  }, [currentPosition]);
+  
+  useEffect(() => {
+    followUser();
+
+    return () => {stopFollowUser()};
+  }, []);
 
   useEffect(() => {
     getTurns(undefined, queryDate);
@@ -42,7 +53,7 @@ export const AssitanceScreen = () => {
       },
       {
         text: 'SI',
-        onPress: saveIn,
+        onPress: () => saveIn(location),
       },
     ]);
   };
@@ -63,7 +74,7 @@ export const AssitanceScreen = () => {
       },
       {
         text: 'SI',
-        onPress: saveOut,
+        onPress: () => saveOut(location),
       },
     ]);
   };
@@ -75,7 +86,7 @@ export const AssitanceScreen = () => {
           <Header />
           {hasLocation ? (
             <>
-              <Map currentPosition={currentPosition} />
+              <Map />
               {isIn === 'true' && currentDay === 'Hoy' ? (
                 <Fab
                   backColor="#fd5e13"
