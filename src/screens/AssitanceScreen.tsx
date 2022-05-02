@@ -12,34 +12,42 @@ import {TurnList} from '../components/TurnList';
 import {TurnsDateControl} from '../components/TurnsDateControl';
 import {Location, useLocation} from '../hooks/useLocation';
 import {useAssistance} from '../hooks/useAssistance';
+import { addDaysToDate, getLocaleFormatedDateString } from '../utils';
 
 export const AssitanceScreen = () => {
-  const [queryDate, setQueryDate] = useState(new Date());
   const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
-  const {hasLocation, currentPosition, followUser, stopFollowUser} = useLocation();
+  const {hasLocation, currentPosition, followUser, stopFollowUser} =
+    useLocation();
   const {turns, totalHours, isIn, getTurns, saveIn, saveOut} = useAssistance();
-  const [location, setLocation] = useState<Location>({lat: 0, long: 0})
 
-  useEffect(() => {
-    setLocation(currentPosition);
-  }, [currentPosition]);
-  
   useEffect(() => {
     followUser();
 
-    return () => {stopFollowUser()};
+    return () => {
+      stopFollowUser();
+    };
   }, []);
 
   useEffect(() => {
-    getTurns(undefined, queryDate);
-  }, []);
+    const date = new Date();
+    if (currentDay === 'Hoy') {
+      getTurns(undefined, date);
+    } else {
+      getTurns(undefined, addDaysToDate(date, -1) );
+    }
+  }, [currentDay]);
 
   const handleIn = async () => {
     const isLocEnable = await isLocationEnabled();
     if (!isLocEnable) {
       Alert.alert('Aviso!', 'Por favor active su GPS', [
-        {text: 'OK', onPress: () => {return}}        
+        {
+          text: 'OK',
+          onPress: () => {
+            return;
+          },
+        },
       ]);
       return;
     }
@@ -53,7 +61,7 @@ export const AssitanceScreen = () => {
       },
       {
         text: 'SI',
-        onPress: () => saveIn(location),
+        onPress: () => saveIn(currentPosition),
       },
     ]);
   };
@@ -62,7 +70,12 @@ export const AssitanceScreen = () => {
     const isLocEnable = await isLocationEnabled();
     if (!isLocEnable) {
       Alert.alert('Aviso!', 'Por favor active su GPS', [
-        {text: 'OK', onPress: () => {return}}        
+        {
+          text: 'OK',
+          onPress: () => {
+            return;
+          },
+        },
       ]);
       return;
     }
@@ -74,7 +87,7 @@ export const AssitanceScreen = () => {
       },
       {
         text: 'SI',
-        onPress: () => saveOut(location),
+        onPress: () => saveOut(currentPosition),
       },
     ]);
   };
@@ -87,29 +100,26 @@ export const AssitanceScreen = () => {
           {hasLocation ? (
             <>
               <Map />
-              {isIn === 'true' && currentDay === 'Hoy' ? (
+              {isIn === 'true' ? (
                 <Fab
                   backColor="#fd5e13"
                   text="Registrar Salida"
                   onPress={handleOut}
+                  disabled={currentDay === 'Ayer'}
                   style={styles.buttonOut}
                 />
               ) : (
-                currentDay === 'Hoy' && (
-                  <Fab
-                    backColor="#00c060"
-                    text="Registrar Ingreso"
-                    onPress={handleIn}
-                    style={styles.buttonIn}
-                  />
-                )
+                <Fab
+                  backColor="#00c060"
+                  text="Registrar Ingreso"
+                  onPress={handleIn}
+                  disabled={currentDay === 'Ayer'}
+                  style={styles.buttonIn}
+                />
               )}
               <Hr />
               <Text style={styles.registryTitle}>Registro de turnos</Text>
               <TurnsDateControl
-                getTurns={getTurns}
-                queryDate={queryDate}
-                setQueryDate={setQueryDate}
                 currentDay={currentDay}
                 setCurrentDay={setCurrentDay}
               />

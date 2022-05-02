@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React  from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -7,26 +7,10 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {addDaysToDate} from '../utils';
 
-export const TurnsDateControl = ({
-  getTurns,
-  queryDate,
-  setQueryDate,
-  currentDay,
-  setCurrentDay,
-}: any) => {
-  const onGoBack = () => {
-    setQueryDate(addDaysToDate(queryDate, -1));
-    setCurrentDay(currentDay === 'Hoy' ? 'Ayer' : 'Hoy');
-    getTurns(undefined, queryDate);
-  };
-
-  const onGoForward = () => {
-    setQueryDate(addDaysToDate(queryDate, 1));
-    setCurrentDay(currentDay === 'Ayer' ? 'Hoy' : 'Ayer');
-    getTurns(undefined, queryDate);
-  };
+export const TurnsDateControl = ({currentDay, setCurrentDay}: any) => {
+  const onGoBack = () => setCurrentDay('Ayer');
+  const onGoForward = () => setCurrentDay('Hoy');
 
   return (
     <View
@@ -45,7 +29,7 @@ export const TurnsDateControl = ({
           currentDay === 'Ayer' ? styles.disabledArrow : null,
         ]}>
         {currentDay !== 'Ayer' ? (
-          <Icon name="arrow-back" color='#3a3a3a' size={20} />
+          <Icon name="arrow-back" color="#3a3a3a" size={20} />
         ) : (
           <Text />
         )}
@@ -61,7 +45,7 @@ export const TurnsDateControl = ({
         ]}
         disabled={currentDay === 'Hoy'}>
         {currentDay !== 'Hoy' ? (
-          <Icon name="arrow-forward" color='#3a3a3a' size={20} />
+          <Icon name="arrow-forward" color="#3a3a3a" size={20} />
         ) : (
           <Text />
         )}

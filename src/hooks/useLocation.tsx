@@ -59,7 +59,7 @@ export const useLocation = () => {
       {
         enableHighAccuracy: true,
         timeout: 20000,
-        distanceFilter: 100,
+        distanceFilter: 50,
       },
     );
   };

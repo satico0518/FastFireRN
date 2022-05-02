@@ -40,3 +40,8 @@ export const getLocaleTimeFromDateNumber = (dateNumber: number) => {
   const mins = date.getMinutes().toLocaleString();
   return `${hr.length < 2 ? '0' + hr : hr}:${ mins.length < 2 ? '0' + mins : mins}`;
 };
+
+export const getLocaleFormatedDateString = (date: Date) => {
+  const [month, day, _] = date.toLocaleDateString().split('/');
+  return `${new Date().getFullYear()}-${month}-${day}`;
+}

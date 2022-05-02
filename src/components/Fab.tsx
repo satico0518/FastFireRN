@@ -10,6 +10,7 @@ interface Props {
   fontSize?: number;
   iconName?: string;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 }
 
 export const Fab: FC<Props> = ({
@@ -19,13 +20,15 @@ export const Fab: FC<Props> = ({
   text = '',
   fontSize = 15,
   style = {},
+  disabled = false,
 }) => {
   return (
     <View style={{...(style as any)}}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        style={{...styles.blackButton, backgroundColor: backColor}}>
+        disabled={disabled}
+        style={[{...styles.blackButton, backgroundColor: backColor}, disabled && styles.disabled]}>
         {iconName !== '' && (
           <Icon
             name={iconName}
@@ -65,4 +68,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  disabled: {
+    backgroundColor: '#ccc'
+  }
 });

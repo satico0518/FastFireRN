@@ -3,23 +3,22 @@ import {Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Turn} from '../components/TurnItem';
 import {AuthContext} from '../context/AuthContext';
-import {Location, useLocation} from './useLocation';
+import {Location} from './useLocation';
 import ffApi from '../api';
+import { getLocaleFormatedDateString } from '../utils';
 
 export const useAssistance = () => {
   const {user} = useContext(AuthContext);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [totalHours, setTotalHours] = useState<number>(0);
   const [isIn, setIsIn] = useState<string>();
-  const {getCurrentLocation} = useLocation();
 
   const getTurns = async (userID: string = user?._id as string, date: Date = new Date()) => {
     // Elimina data del storage por si se borra un turno iniciado de manera manual en la BD
     // AsyncStorage.removeItem('isIn');
     // AsyncStorage.removeItem('currentTurnId');
     try {
-      getCurrentLocation();
-      const day = date.toISOString().split('T')[0];
+      const day = getLocaleFormatedDateString(date);
       const turnsApi = await ffApi.get(`/turns/${userID}?date=${day}`);
       if (turnsApi.data.length > 0) {
         setTurns(turnsApi.data);
@@ -35,6 +34,11 @@ export const useAssistance = () => {
           0,
         );
         setTotalHours(totalHrs * 60000);
+      } else {
+        setIsIn('false');
+        AsyncStorage.setItem('isIn', 'false');
+        setTurns([]);
+        setTotalHours(0);
       }
     } catch (error) {
       Alert.alert('Aviso!', 'Error al cargar turnos!', [{text: 'Aceptar'}]);
@@ -42,6 +46,8 @@ export const useAssistance = () => {
   };
 
   const saveIn = async (currentPosition: Location) => {
+    console.log('curr in pos: ', currentPosition);
+    
     try {
       const turn = await ffApi.post('/turns', {
         user: user?._id,
@@ -69,6 +75,7 @@ export const useAssistance = () => {
   };
 
   const saveOut = async (currentPosition: Location) => {
+    console.log('curr out pos: ', currentPosition);
     try {
       await ffApi.put(`/turns/${await AsyncStorage.getItem('currentTurnId')}`, {
         timeOut: Date.now(),

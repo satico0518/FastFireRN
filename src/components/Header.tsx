@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     padding: 5,
-    borderColor: '#ff1c1c',
+    borderColor: '#b1b1b1',
     borderWidth: 5,
     borderRadius: 50,
   },
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#3a3a3a',
   },
   date: {
       flexDirection: 'row'
