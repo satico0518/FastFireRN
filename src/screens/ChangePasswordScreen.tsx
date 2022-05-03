@@ -80,16 +80,11 @@ export const ChangePasswordScreen = ({navigation}: Props) => {
         {onDismiss: () => navigation.replace('Login')},
       );
     } catch (error: any) {
-        console.log(error);
-        
-      Alert.alert('Aviso!', error.msg || 'Error cambiando contraseña!', [
-        {
-          text: 'Ok',
-          onPress: () => {
-            return;
-          },
-        },
+      console.error('Error saving in', {error: error.response.data.error});
+      Alert.alert('Aviso!', error.response.data.error.msg || 'Error cambiando contraseña!', [
+        { text: 'Ok', onPress: () => { return; }},
       ]);
+      return {error: error.response.data.error.msg};
     }
   };
   return (
@@ -139,6 +134,11 @@ export const ChangePasswordScreen = ({navigation}: Props) => {
           onPress={handleRegister}>
           <Text style={authStyles.loginButtonText}>Cambiar</Text>
         </TouchableOpacity>
+        <View style={{...authStyles.linksWrapper, alignSelf: 'flex-end'}}>
+          <TouchableOpacity onPress={() => navigation.replace('Login')}>
+            <Text style={authStyles.smallLink}>ya recordé mi contraseña</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </AuthScreenLayout>
   );

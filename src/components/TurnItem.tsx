@@ -1,8 +1,9 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {Location} from '../hooks/useLocation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {convertMsToHM, getLocaleTimeFromDateNumber} from '../utils';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 export interface Turn {
   _id?: string;
@@ -11,9 +12,13 @@ export interface Turn {
   timeOut?: number;
   locationOut?: Location;
   totalTimeMins?: number;
+  extraHourReason?: string;
 }
 
 export const TurnItem = ({turn}: {turn: Turn}) => {
+  const handleCheckReason = () => {
+    Alert.alert('Justificación', turn.extraHourReason)
+  }
   return (
     <View style={styles.itemWrapper}>
       <View style={{flexDirection: 'row'}}>
@@ -31,6 +36,16 @@ export const TurnItem = ({turn}: {turn: Turn}) => {
             ? getLocaleTimeFromDateNumber(turn.timeOut as number)
             : '...'}
         </Text>
+        {turn.extraHourReason && (
+          <TouchableOpacity onPress={handleCheckReason}>
+            <Icon
+              style={{marginLeft: 5}}
+              name="chatbox-ellipses-outline"
+              color="#3a3a3a"
+              size={18}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       <View>
         <Text style={{color: '#3a3a3a'}}>

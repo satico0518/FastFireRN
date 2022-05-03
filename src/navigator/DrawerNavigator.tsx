@@ -66,8 +66,9 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
     try {
       const resp = await ffApi.put(`/uploads/avatar`, body);
       changePhoto(resp.data.model.img);      
-    } catch (error) {
-      console.log({error});
+    } catch (error: any) {
+      console.error('Error subiendo avatar', {error: error.response.data.error});
+      return {error: error.response.data.error.msg};
     }
   };
 
@@ -89,7 +90,7 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
 
       uploadPhoto(resp.assets[0], user?._id as string);
     } catch (error) {
-      console.error('error xxx: ', error);
+      console.error(error);
       Alert.alert('Error', 'Error subiendo imagen', [{text: 'ok'}]);
     }
   };
@@ -126,12 +127,6 @@ const CustomMenu = ({navigation}: DrawerContentComponentProps) => {
         {user?.role === 'ADMIN_ROLE' ||
           (user?.role === 'SUPERVISOR_ROLE' && (
             <>
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => navigation.navigate('Activate')}>
-                <Icon name="person-add" color="red" size={20} />
-                <Text style={styles.menuText}>Activar Usuarios</Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.menuItem}
                 onPress={() => navigation.navigate('RegisterOper')}>

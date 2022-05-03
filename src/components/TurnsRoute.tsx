@@ -7,6 +7,7 @@ import {Calendar, DateData, LocaleConfig} from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Fab} from './Fab';
+import { getTurnsByUserAndDay } from '../services/turns';
 
 LocaleConfig.locales['es'] = {
   monthNames: [
@@ -59,12 +60,11 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
   const getTurns = async (date: DateData) => {
     try {
       setSelectedDate(date.dateString);
-      const turnsApi = await ffApi.get(`/turns/${_id}?date=${date.dateString}`);
-
-      setTurns(turnsApi.data);
+      const turnsApi = await getTurnsByUserAndDay(_id, date.dateString);
+      setTurns(turnsApi);
       setCalendarVisibility(false);
     } catch (error: any) {
-      console.log(error);
+      console.error(error.response);
     }
   };
 
@@ -83,8 +83,8 @@ export const TurnsRoute = ({_id}: {_id: string}) => {
           maxDate={new Date().toISOString().split('T')[0]}
           onDayPress={getTurns}
           monthFormat={'MMMM yyyy'}
-          disableMonthChange={false}
           firstDay={1}
+          
           markedDates={
             {
               // '2022-04-19': {

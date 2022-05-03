@@ -17,7 +17,7 @@ type AuthContextProps = {
   token: string | null;
   user: User | null;
   status: 'checking' | 'authenticated' | 'not-authenticated';
-  singUp: (registerData: RegisterData) => void;
+  singUp: (registerData: RegisterData) => boolean;
   changePhoto: (uri: string) => void;
   singIn: (loginData: LoginData) => Promise<boolean>;
   logOut: () => void;
@@ -49,7 +49,7 @@ export const AuthProvider = ({children}: any) => {
   }, [])
   
 
-  const singUp = async ({identification, name, password, deviceId}: RegisterData) => {
+  const singUp = async ({identification, name, password, deviceId}: RegisterData):Promise<boolean> => {
     try {
       await ffApi.post<RegisterResponse>('/users', {
         identification,
@@ -57,11 +57,14 @@ export const AuthProvider = ({children}: any) => {
         password,
 		    deviceId,
       });
+      return true;
     } catch (error: any) {
       Alert.alert('Aviso!', error.response.data.error.errors.map((e: any) => e.msg).join(', '));
       console.error(error.response.data);
+      return false
     }
   };
+
   const singIn = async ({user, password, deviceId}: LoginData): Promise<boolean> => {
     try {             
       const response = await ffApi.post<LoginResponse>('/auth/login', {

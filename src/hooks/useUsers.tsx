@@ -21,7 +21,7 @@ export const useUsers = () => {
       setUsers(sortedData);
       setFilteredUsers(sortedData);      
     } catch (error: any) {
-      console.error(error);
+      console.error(error.response.data.error);
       Alert.alert('Aviso!', error.response.data.error, [{text: 'OK'}]);
     }
   };

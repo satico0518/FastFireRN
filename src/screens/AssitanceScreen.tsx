@@ -1,5 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Alert, Dimensions, StyleSheet, Text, View} from 'react-native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {
+  Alert,
+  Dimensions,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isLocationEnabled} from 'react-native-device-info';
 import {LoadingScreen} from './LoadingScreen';
@@ -10,16 +19,22 @@ import {Map} from '../components/Map';
 import {PermissionContext} from '../context/PermissionContext';
 import {TurnList} from '../components/TurnList';
 import {TurnsDateControl} from '../components/TurnsDateControl';
-import {Location, useLocation} from '../hooks/useLocation';
+import {useLocation} from '../hooks/useLocation';
 import {useAssistance} from '../hooks/useAssistance';
-import { addDaysToDate, getLocaleFormatedDateString } from '../utils';
+import {addDaysToDate, isExtraHours} from '../utils';
+import {saveExtraHourReason} from '../services/turns';
 
 export const AssitanceScreen = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [extraHoursReason, setExtraHoursReason] = useState('');
   const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
   const {hasLocation, currentPosition, followUser, stopFollowUser} =
     useLocation();
-  const {turns, totalHours, isIn, getTurns, saveIn, saveOut} = useAssistance();
+  const {loading, turns, totalHours, isIn, getTurns, saveIn, saveOut} =
+    useAssistance();
+
+  const shouldCheckExtraHours = useRef(false);
 
   useEffect(() => {
     followUser();
@@ -34,9 +49,20 @@ export const AssitanceScreen = () => {
     if (currentDay === 'Hoy') {
       getTurns(undefined, date);
     } else {
-      getTurns(undefined, addDaysToDate(date, -1) );
+      getTurns(undefined, addDaysToDate(date, -1));
     }
   }, [currentDay]);
+
+  useEffect(() => {
+    if (
+      shouldCheckExtraHours.current &&
+      isExtraHours(totalHours) &&
+      !turns[turns.length - 1].extraHourReason
+    ) {
+      setExtraHoursReason('');
+      setModalVisible(true);
+    }
+  }, [totalHours]);
 
   const handleIn = async () => {
     const isLocEnable = await isLocationEnabled();
@@ -87,9 +113,31 @@ export const AssitanceScreen = () => {
       },
       {
         text: 'SI',
-        onPress: () => saveOut(currentPosition),
+        onPress: async () => {
+          setExtraHoursReason('');
+          await saveOut(currentPosition);
+          setCurrentDay('Hoy');
+          shouldCheckExtraHours.current = true;
+        },
       },
     ]);
+  };
+
+  const onExtraHoursReasonChange = async () => {
+    if (extraHoursReason.length < 10) {
+      Alert.alert(
+        'Aviso',
+        'Complete su justificación, debe tener mas de 10 letras.',
+        [{text: 'Ok', onPress: () => {return;}}]
+      );
+      return;
+    } else {
+      setModalVisible(false);
+      await saveExtraHourReason(extraHoursReason);
+      setExtraHoursReason('');
+      shouldCheckExtraHours.current = false;
+      getTurns();
+    }
   };
 
   return (
@@ -105,7 +153,7 @@ export const AssitanceScreen = () => {
                   backColor="#fd5e13"
                   text="Registrar Salida"
                   onPress={handleOut}
-                  disabled={currentDay === 'Ayer'}
+                  disabled={loading}
                   style={styles.buttonOut}
                 />
               ) : (
@@ -113,17 +161,48 @@ export const AssitanceScreen = () => {
                   backColor="#00c060"
                   text="Registrar Ingreso"
                   onPress={handleIn}
-                  disabled={currentDay === 'Ayer'}
+                  disabled={currentDay === 'Ayer' || loading}
                   style={styles.buttonIn}
                 />
               )}
               <Hr />
               <Text style={styles.registryTitle}>Registro de turnos</Text>
               <TurnsDateControl
+                isLoading={loading}
                 currentDay={currentDay}
                 setCurrentDay={setCurrentDay}
               />
               <TurnList turns={turns} totalHours={totalHours} />
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalTitle}>Confirmación!</Text>
+                    <Text style={styles.modalText}>
+                      Por favor justifique por qué necesitó tiempo extra para
+                      finalizar su turno.
+                    </Text>
+                    <TextInput
+                      multiline
+                      style={{
+                        borderBottomColor: '#3a3a3a',
+                        borderBottomWidth: 1,
+                        marginBottom: 10,
+                        width: '100%',
+                        color: '#3a3a3a',
+                      }}
+                      onChangeText={setExtraHoursReason}
+                      value={extraHoursReason}></TextInput>
+                    <Pressable
+                      style={[styles.modalButton, styles.buttonClose]}
+                      onPress={onExtraHoursReasonChange}>
+                      <Text style={styles.textStyle}>Enviar</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
             </>
           ) : (
             <LoadingScreen />
@@ -189,5 +268,54 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#3a3a3a',
     alignSelf: 'center',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    width: Dimensions.get('screen').width * 0.9,
+    justifyContent: 'center',
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalButton: {
+    width: '100%',
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#031c31',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalTitle: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#3a3a3a',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'justify',
+    color: '#3a3a3a',
   },
 });

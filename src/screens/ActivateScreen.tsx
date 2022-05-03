@@ -120,7 +120,7 @@ export const ActivateScreen = () => {
             alignItems: 'center',
             padding: 20,
           }}>
-          <Text style={{fontSize: 18}}>
+          <Text style={{fontSize: 18, color: '#3a3a3a'}}>
             No hay usuarios pendientes por activación
           </Text>
           <Fab

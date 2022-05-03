@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
   Image,
@@ -13,7 +12,9 @@ import {TabBar, TabView} from 'react-native-tab-view';
 import ffApi from '../api';
 import {TurnsRoute} from '../components/TurnsRoute';
 import {User} from '../interfaces/app-interfaces';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {translateRoles} from '../utils';
+import {deleteUser} from '../services/users';
 
 export const UserDetailScreen = ({route, navigation}: any) => {
   const {
@@ -66,9 +67,11 @@ export const UserDetailScreen = ({route, navigation}: any) => {
                     },
                   },
                 ],
-                {onDismiss: () => {
-                  navigation.goBack();
-                }}
+                {
+                  onDismiss: () => {
+                    navigation.goBack();
+                  },
+                },
               );
             } catch (error) {
               Alert.alert('Error', 'Error al intentar cambiar dispositivo', [
@@ -111,6 +114,25 @@ export const UserDetailScreen = ({route, navigation}: any) => {
     }
   };
 
+  const handleUserDelete = () => {
+    Alert.alert('Aviso!', `Confirma que desea eliminar al usuario "${name}"`, [
+      {
+        text: 'Cancelar',
+        onPress: () => {
+          return;
+        },
+      },
+      {
+        text: 'Eliminar',
+        onPress: async () => {
+          const deleteOk = await deleteUser(_id);
+          if (deleteOk) Alert.alert('Aviso!', 'Usuario eliminado!');
+          navigation.goBack();
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.mainWrapper}>
       <View style={styles.header}>
@@ -149,7 +171,16 @@ export const UserDetailScreen = ({route, navigation}: any) => {
               flex: 1,
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.name}>{name}</Text>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.name}>{name}</Text>
+              <Icon
+                name="trash-outline"
+                color="#f00"
+                size={20}
+                onPress={handleUserDelete}
+              />
+            </View>
             <Text style={styles.id}>ID: {identification}</Text>
             <Text style={styles.role}>Cargo: {translateRoles(role)}</Text>
             <Text style={styles.state}>
@@ -161,7 +192,7 @@ export const UserDetailScreen = ({route, navigation}: any) => {
           </View>
         </View>
       </View>
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, marginTop: 5}}>
         <TabView
           style={{marginTop: 20}}
           navigationState={{index, routes}}
@@ -196,7 +227,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   name: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#3a3a3a',
   },

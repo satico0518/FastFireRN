@@ -9,10 +9,10 @@ export const HomeScreen = () => {
     <AuthScreenLayout>
       <View style={{justifyContent: 'space-around'}}>
         <View>
-          <Text style={{fontSize: 20, fontWeight: 'bold'}}>Hola,</Text>
-          <Text style={{fontSize: 30}}>{user?.name}</Text>
+          <Text style={{fontSize: 20, fontWeight: 'bold', color: '#3a3a3a'}}>Hola,</Text>
+          <Text style={{fontSize: 30, color: '#3a3a3a'}}>{user?.name}</Text>
         </View>
-        <Text style={{fontSize: 20, marginTop: 30}}>Fast Fire de Colombia 2022</Text>
+        <Text style={{fontSize: 20, marginTop: 30, color: '#3a3a3a'}}>Fast Fire de Colombia 2022</Text>
       </View>
     </AuthScreenLayout>
   );

@@ -78,13 +78,14 @@ export const RegisterScreen = ({navigation}: Props) => {
       password: form.passwordConfirm,
       deviceId,
     };
-    singUp(registerData);
-    Alert.alert(
-      'Aviso',
-      'Registro existoso! Por favor solicite su activación con su supervisor.',
-      [{text: 'Ok', onPress: () => navigation.replace('Login')}],
-      {onDismiss: () => navigation.replace('Login')},
-    );
+    if (await singUp(registerData)) {
+      Alert.alert(
+        'Aviso',
+        'Registro existoso! Por favor solicite su activación con su supervisor.',
+        [{text: 'Ok', onPress: () => navigation.replace('Login')}],
+        {onDismiss: () => navigation.replace('Login')},
+      );
+    }
   };
   return (
     <AuthScreenLayout>

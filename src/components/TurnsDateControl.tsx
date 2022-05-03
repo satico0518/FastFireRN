@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export const TurnsDateControl = ({currentDay, setCurrentDay}: any) => {
+export const TurnsDateControl = ({isLoading, currentDay, setCurrentDay}: any) => {
   const onGoBack = () => setCurrentDay('Ayer');
   const onGoForward = () => setCurrentDay('Hoy');
 
@@ -23,10 +23,11 @@ export const TurnsDateControl = ({currentDay, setCurrentDay}: any) => {
         alignSelf: 'center',
       }}>
       <TouchableOpacity
+        disabled={isLoading}
         onPress={onGoBack}
         style={[
           styles.arrows,
-          currentDay === 'Ayer' ? styles.disabledArrow : null,
+          currentDay === 'Ayer' || isLoading ? styles.disabledArrow : null,
         ]}>
         {currentDay !== 'Ayer' ? (
           <Icon name="arrow-back" color="#3a3a3a" size={20} />
@@ -41,9 +42,9 @@ export const TurnsDateControl = ({currentDay, setCurrentDay}: any) => {
         onPress={onGoForward}
         style={[
           styles.arrows,
-          currentDay === 'Hoy' ? styles.disabledArrow : null,
+          currentDay === 'Hoy' || isLoading ? styles.disabledArrow : null,
         ]}
-        disabled={currentDay === 'Hoy'}>
+        disabled={currentDay === 'Hoy' || isLoading}>
         {currentDay !== 'Hoy' ? (
           <Icon name="arrow-forward" color="#3a3a3a" size={20} />
         ) : (

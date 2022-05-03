@@ -45,3 +45,13 @@ export const getLocaleFormatedDateString = (date: Date) => {
   const [month, day, _] = date.toLocaleDateString().split('/');
   return `${new Date().getFullYear()}-${month}-${day}`;
 }
+
+export const isExtraHours = (milliseconds: number) => {
+  console.log(milliseconds);
+  const minutes =  milliseconds / 1000 / 60;
+  console.log('mins: ', minutes);
+
+  
+  if(minutes > 510) return true;
+  return false;
+}
