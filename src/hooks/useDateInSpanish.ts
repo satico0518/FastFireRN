@@ -24,7 +24,7 @@ const months = [
 
 const useDateInSpanish = () => {
   const date = new Date();
-  return `${days[date.getDay() - 1]} ${date.getDate()} de ${
+  return `${days[date.getDay()]} ${date.getDate()} de ${
     months[date.getMonth()]
   }`;
 };
