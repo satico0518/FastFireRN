@@ -12,8 +12,8 @@ import {RegisterScreen} from '../screens/RegisterScreen';
 import {ActivateScreen} from '../screens/ActivateScreen';
 import {UsersScreen} from '../screens/UsersScreen';
 import {UserDetailScreen} from '../screens/UserDetailScreen';
-import { RegisterOperScreen } from '../screens/RegisterOperScreen';
-import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
+import {RegisterOperScreen} from '../screens/RegisterOperScreen';
+import {ChangePasswordScreen} from '../screens/ChangePasswordScreen';
 
 type StackNavigatorParams = {
   Login: undefined;
@@ -31,7 +31,7 @@ const Stack = createNativeStackNavigator<StackNavigatorParams>();
 
 export const StackNavigator = () => {
   const {permissions} = useContext(PermissionContext);
-  const {status, user} = useContext(AuthContext);
+  const {status} = useContext(AuthContext);
 
   if (permissions.locationStatus === 'unavailable') {
     return <LoadingScreen />;
@@ -39,14 +39,7 @@ export const StackNavigator = () => {
 
   if (status === 'checking') return <LoadingScreen />;
 
-  const getInitialRoute = () => {
-    if (status === 'authenticated') {
-      if (user?.role === 'ADMIN_ROLE') return 'Home';
-
-      return 'Assistance';
-    }
-    return 'Login';
-  };
+  const getInitialRoute = () => (status === 'authenticated' ? 'Home' : 'Login');
 
   return (
     <Stack.Navigator

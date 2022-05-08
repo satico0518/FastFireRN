@@ -1,7 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {Dimensions} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
-import {Location, useLocation} from '../hooks/useLocation';
+import {useLocation} from '../hooks/useLocation';
 
 export const Map = () => {
   const mapViewRef = useRef<MapView>();
@@ -13,10 +13,10 @@ export const Map = () => {
     });
   }, [currentPosition]);
 
-  useEffect(() => {
+  useEffect(() => {    
     followUser();
 
-    return () => {stopFollowUser()};
+    return () => { stopFollowUser(); };
   }, []);
 
   return (
@@ -36,8 +36,8 @@ export const Map = () => {
         coordinate={{
           latitude: currentPosition.lat,
           longitude: currentPosition.long,
-          latitudeDelta: 0.3,
-          longitudeDelta: 0.3,
+          latitudeDelta: 0.00099,
+          longitudeDelta: 0.00099,
         }}
         title="Usted está aquí"
         description="En este punto se guardará su registro"
