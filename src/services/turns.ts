@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {AxiosResponse} from 'axios';
 import ffApi from '../api';
 import {Turn} from '../components/TurnItem';
 import {Location} from '../hooks/useLocation';
@@ -50,6 +49,25 @@ export const saveOutTurn = async (currentPosition: Location) => {
         lat: currentPosition.lat,
         long: currentPosition.long,
       },
+    });
+
+    if (response.status === 200) return response.data;
+    else throw new Error('Error registrando salida');
+  } catch (error: any) {
+    console.error('Error saving out', {error: error.response.data.error});
+    return {error: error.response.data.error.msg};
+  }
+};
+
+export const saveManualOutTurn = async (turn: Turn, timeOut: Date) => {
+  try {
+    const response = await ffApi.put(`/turns/${turn._id}`, {
+      timeOut,
+      locationOut: {
+        lat: turn.locationIn.lat,
+        long: turn.locationIn.long,
+      },
+      isManualFinished: true
     });
 
     if (response.status === 200) return response.data;

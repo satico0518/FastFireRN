@@ -47,9 +47,6 @@ export const getLocaleFormatedDateString = (date: Date) => {
 }
 
 export const isExtraHours = (milliseconds: number) => {
-  console.log(milliseconds);
   const minutes =  milliseconds / 1000 / 60;
-  
-  if(minutes > 510) return true;
-  return false;
+  return minutes > 620;
 }

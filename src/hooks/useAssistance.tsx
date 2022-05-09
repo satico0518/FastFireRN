@@ -4,19 +4,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Turn} from '../components/TurnItem';
 import {AuthContext} from '../context/AuthContext';
 import {Location} from './useLocation';
-import {getLocaleFormatedDateString} from '../utils';
+import {addDaysToDate, getLocaleFormatedDateString} from '../utils';
 import {getTurnsByUserAndDay, saveInTurn, saveOutTurn} from '../services/turns';
 
 export const useAssistance = () => {
   const {user} = useContext(AuthContext);
   const [turns, setTurns] = useState<Turn[]>([]);
+  const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const [totalHours, setTotalHours] = useState<number>(0);
   const [isIn, setIsIn] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const getTurns = async (
     userID: string = user?._id as string,
-    date: Date = new Date()
+    date: Date = new Date(),
   ) => {
     // Elimina data del storage por si se borra un turno iniciado de manera manual en la BD
     // AsyncStorage.removeItem('isIn');
@@ -24,21 +25,33 @@ export const useAssistance = () => {
     try {
       setLoading(true);
       const day = getLocaleFormatedDateString(date);
-      const turnsApi = await getTurnsByUserAndDay(userID, day);
-      if (turnsApi.length > 0) {
-        setTurns(turnsApi);
-        if (turnsApi.length && !turnsApi[turnsApi.length - 1].timeOut) {
+      let [todayTurns, yTurns] = await Promise.all([
+        getTurnsByUserAndDay(userID, day),
+        getTurnsByUserAndDay(
+          userID,
+          getLocaleFormatedDateString(addDaysToDate(date, -1)),
+        ),
+      ]);
+      if (currentDay === 'Hoy' && yTurns.length && !yTurns[yTurns.length - 1].timeOut) {
+        Alert.alert('Aviso!', 'Tiene un turno por cerrar del dia anterior. Si se encuentra en una ubicación diferente solicite ayuda a su supervisor para cerrar el turno manualmente!');
+        setCurrentDay('Ayer');
+        return
+      }
+      if (currentDay === 'Ayer') todayTurns = yTurns;
+      if (todayTurns.length > 0) {
+        setTurns(todayTurns);
+        if (todayTurns.length && !todayTurns[todayTurns.length - 1].timeOut) {
           setIsIn('true');
           AsyncStorage.setItem('isIn', 'true');
           AsyncStorage.setItem(
             'currentTurnId',
-            turnsApi[turnsApi.length - 1]._id,
+            todayTurns[todayTurns.length - 1]._id,
           );
         } else {
           setIsIn('false');
         }
-  
-        const totalHrs = turnsApi.reduce(
+
+        const totalHrs = todayTurns.reduce(
           (acum: number, turn: Turn) => acum + (turn.totalTimeMins as number),
           0,
         );
@@ -88,7 +101,7 @@ export const useAssistance = () => {
         setLoading(false);
         return;
       }
-      
+
       const index = turns.findIndex((h: Turn) => !h.timeOut);
       setTurns([
         ...turns.slice(0, index),
@@ -114,6 +127,8 @@ export const useAssistance = () => {
     turns,
     totalHours,
     isIn,
+    currentDay,
+    setCurrentDay,
     setIsIn,
     getTurns,
     saveIn,

@@ -21,18 +21,25 @@ import {TurnList} from '../components/TurnList';
 import {TurnsDateControl} from '../components/TurnsDateControl';
 import {useLocation} from '../hooks/useLocation';
 import {useAssistance} from '../hooks/useAssistance';
-import {addDaysToDate, isExtraHours} from '../utils';
+import {isExtraHours} from '../utils';
 import {saveExtraHourReason} from '../services/turns';
 
 export const AssitanceScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [extraHoursReason, setExtraHoursReason] = useState('');
-  const [currentDay, setCurrentDay] = useState<'Hoy' | 'Ayer'>('Hoy');
   const {permissions, askLocationPermissions} = useContext(PermissionContext);
-  const {hasLocation, currentPosition, followUser, stopFollowUser} =
-    useLocation();
-  const {loading, turns, totalHours, isIn, getTurns, saveIn, saveOut} =
-    useAssistance();
+  const {hasLocation, currentPosition, followUser, stopFollowUser} = useLocation();
+  const {
+    loading,
+    turns,
+    totalHours,
+    isIn,
+    currentDay,
+    setCurrentDay,
+    getTurns,
+    saveIn,
+    saveOut,
+  } = useAssistance();
 
   const shouldCheckExtraHours = useRef(false);
 
@@ -45,12 +52,7 @@ export const AssitanceScreen = () => {
   }, []);
 
   useEffect(() => {
-    const date = new Date();
-    if (currentDay === 'Hoy') {
-      getTurns(undefined, date);
-    } else {
-      getTurns(undefined, addDaysToDate(date, -1));
-    }
+      getTurns();
   }, [currentDay]);
 
   useEffect(() => {
@@ -116,7 +118,6 @@ export const AssitanceScreen = () => {
         onPress: async () => {
           setExtraHoursReason('');
           await saveOut(currentPosition);
-          setCurrentDay('Hoy');
           shouldCheckExtraHours.current = true;
         },
       },
@@ -128,7 +129,14 @@ export const AssitanceScreen = () => {
       Alert.alert(
         'Aviso',
         'Complete su justificación, debe tener mas de 10 letras.',
-        [{text: 'Ok', onPress: () => {return;}}]
+        [
+          {
+            text: 'Ok',
+            onPress: () => {
+              return;
+            },
+          },
+        ],
       );
       return;
     } else {
@@ -145,7 +153,7 @@ export const AssitanceScreen = () => {
       {permissions.locationStatus === 'granted' ? (
         <View style={{flex: 1, width: '100%', backgroundColor: 'white'}}>
           <Header />
-          {hasLocation ? (
+          {hasLocation && !loading ? (
             <>
               <Map />
               {isIn === 'true' ? (
